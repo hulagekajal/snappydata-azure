@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -u BASEURL
-# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -u https://github.com/test
+# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -u https://raw.githubusercontent.com/arsenvlad/snappydata-azure/master
 
 log()
 {
