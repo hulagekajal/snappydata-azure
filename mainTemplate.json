@@ -20,7 +20,7 @@
     "clusterName": {
       "type": "string",
       "defaultValue": "av",
-      "minLength": "3",
+      "minLength": "2",
       "maxLength": "10",
       "metadata": {
         "description": "Cluster name consisting of 3-10 lowercase letter and numbers"
@@ -316,16 +316,16 @@
       "updateDomainCount": "20"
     },
     "sharedStorageAccount": "[concat('s',uniqueString(resourceGroup().id,'s'),parameters('clusterName'))]",
-    "sharedStoreAccountType": "Standard_LRS",
+    "sharedStorageAccountType": "Standard_LRS",
     "locator1NicName": "[concat(parameters('clusterName'),'-locator1-nic')]",
     "locator1PrivateIPAddress": "10.0.1.4",
-    "locator1VmName": "[concat(parameters('clusterName'),'-locator2')]",
+    "locator1VmName": "[concat(parameters('clusterName'),'-locator1')]",
     "locator2NicName": "[concat(parameters('clusterName'),'-locator2-nic')]",
     "locator2PrivateIPAddress": "10.0.1.5",
-    "locator2VmName": "[concat(parameters('clusterName'),'-leader1')]",
+    "locator2VmName": "[concat(parameters('clusterName'),'-locator2')]",
     "leader1NicName": "[concat(parameters('clusterName'),'-leader1-nic')]",
     "leader1PrivateIPAddress": "10.0.1.6",
-    "leader1VmName": "[concat(parameters('clusterName'),'-leader2')]",
+    "leader1VmName": "[concat(parameters('clusterName'),'-leader1')]",
     "leader2NicName": "[concat(parameters('clusterName'),'-leader2-nic')]",
     "leader2PrivateIPAddress": "10.0.1.7",
     "leader2VmName": "[concat(parameters('clusterName'),'-leader2')]",
@@ -532,7 +532,7 @@
       "location": "[parameters('location')]",
       "kind": "Storage",
       "sku": {
-        "name": "[variables('sharedStorageAccount')]"
+        "name": "[variables('sharedStorageAccountType')]"
       },
       "properties": {
       }
