@@ -1006,7 +1006,7 @@
       "location": "[parameters('location')]",
       "copy": {
         "name": "dataStoreStorageAccountsCopy",
-        "count": "[length(variables('dataStoreStorageAccountArray'))]"
+        "count": "[variables('dataStoreStorageAccountCount')]"
       },
       "kind": "Storage",
       "sku": {
