@@ -914,8 +914,8 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'))]",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator1VmName'), '/extensions/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator2VmName'), '/extensions/init'))]",
         "dataStoreInitExtensionsCopy"
       ],
       "properties": {
@@ -1025,8 +1025,8 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'))]",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator1VmName'), '/extensions/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator2VmName'), '/extensions/init'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -1155,8 +1155,8 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "dataStoreVmsCopy",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
-        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator1VmName'), '/extensions/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator2VmName'), '/extensions/init'))]"
       ],
       "copy": {
         "name": "dataStoreInitExtensionsCopy",
