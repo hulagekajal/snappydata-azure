@@ -22,3 +22,13 @@ azure group create --name avsnappydata1 --location westus
 ```
 azure group deployment create --resource-group avsnappydata1 --name mainTemplate --template-file mainTemplate.json
 ```
+
+# Copy data to Azure Storage using Azure CLI
+azure storage blob copy start --source-uri "https://templocistorage.blob.core.windows.net/snappydata/scripts.tgz" --dest-account-name "sdtests" --dest-account-key "" --dest-container "testdata" --dest-blob "scripts.tgz"
+
+azure storage blob copy start --source-uri "https://templocistorage.blob.core.windows.net/snappydata/TPCH-1GB.zip" --dest-account-name "sdtests" --dest-account-key "" --dest-container "testdata" --dest-blob "TPCH-1GB.zip"
+
+azure storage blob copy start --source-uri "https://templocistorage.blob.core.windows.net/snappydata/snappy-cluster_2.10-0.5-tests.jar" --dest-account-name "sdtests" --dest-account-key "" --dest-container "testdata" --dest-blob "snappy-cluster_2.10-0.5-tests.jar"
+
+azure storage blob copy start --source-uri "https://templocistorage.blob.core.windows.net/snappydata/zeppelin.tgz" --dest-account-name "sdtests" --dest-account-key "" --dest-container "testdata" --dest-blob "zeppelin.tgz"
+
