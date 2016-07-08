@@ -120,11 +120,11 @@ tar -zxvf snappydata-0.5-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
-# Download test tools and data sets
-wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/scripts.tgz
-wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/snappy-cluster_2.10-0.5-tests.jar
-wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
-wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
+# Uncomment if you want to download test tools and data sets
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/scripts.tgz
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/snappy-cluster_2.10-0.5-tests.jar
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 

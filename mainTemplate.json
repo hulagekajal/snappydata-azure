@@ -1027,7 +1027,8 @@
         "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator1VmName'), '/extensions/init'))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator2VmName'), '/extensions/init'))]",
-        "dataStoreInitExtensionsCopy"
+        "dataStoreInitExtensionsCopy",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('lead1VmName'), '/extensions/init'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
