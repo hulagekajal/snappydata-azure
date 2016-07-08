@@ -298,8 +298,12 @@
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
     "locator1PublicIPName": "[concat(parameters('clusterName'),'-locator1-publicip')]",
     "dnsNameForLocator1PublicIP": "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]",
-    "dnsNameForLocator2PublicIP": "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]",
     "locator2PublicIPName": "[concat(parameters('clusterName'),'-locator2-publicip')]",
+    "dnsNameForLocator2PublicIP": "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]",
+    "lead1PublicIPName": "[concat(parameters('clusterName'),'-lead1-publicip')]",
+    "dnsNameForLead1PublicIP": "[concat(parameters('dnsNamePrefix'),'-lead1-',uniqueString(resourceGroup().id))]",
+    "lead2PublicIPName": "[concat(parameters('clusterName'),'-lead2-publicip')]",
+    "dnsNameForLead2PublicIP": "[concat(parameters('dnsNamePrefix'),'-lead2-',uniqueString(resourceGroup().id))]",
     "locatorAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
       "faultDomainCount": "2",
@@ -378,6 +382,30 @@
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
           "domainNameLabel": "[variables('dnsNameForLocator2PublicIP')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('lead1PublicIPName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('dnsNameForLead1PublicIP')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('lead2PublicIPName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('dnsNameForLead2PublicIP')]"
         }
       }
     },
@@ -641,7 +669,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -b ', variables('locator2VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
@@ -654,7 +682,7 @@
         "[concat('Microsoft.Compute/virtualMachines/', variables('locator2VmName'), '/extensions/init')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'), '/extensions/init')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'), '/extensions/init')]",
-        "dataStoreExtensionsCopy"
+        "dataStoreInitExtensionsCopy"
       ],
       "properties": {
         "mode": "Incremental",
@@ -787,7 +815,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t locator2', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -b ', variables('locator2VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
@@ -797,7 +825,8 @@
       "name": "[variables('lead1NicName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('lead1PublicIPName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -806,6 +835,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[variables('lead1PrivateIPAddress')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('lead1PublicIPName'))]"
+              },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
               }
@@ -881,7 +913,10 @@
       "name": "[concat(variables('lead1VmName'), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'))]",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]",
+        "dataStoreInitExtensionsCopy"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -891,7 +926,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -b ', variables('locator2VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
@@ -901,7 +936,8 @@
       "name": "[variables('lead2NicName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('lead2PublicIPName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -910,6 +946,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[variables('lead2PrivateIPAddress')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('lead2PublicIPName'))]"
+              },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
               }
@@ -985,7 +1024,9 @@
       "name": "[concat(variables('lead2VmName'), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'))]",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -995,7 +1036,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead2NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead2NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -b ', variables('locator2VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
@@ -1113,10 +1154,12 @@
       "name": "[concat(concat(variables('dataStoreVmName'),copyIndex(1)), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "dataStoreVmsCopy"
+        "dataStoreVmsCopy",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator1VmName'), '/init'))]",
+        "[concat('Microsoft.Compute/virtualMachines/extensions', concat(variables('locator2VmName'), '/init'))]"
       ],
       "copy": {
-        "name": "dataStoreExtensionsCopy",
+        "name": "dataStoreInitExtensionsCopy",
         "count": "[parameters('dataStoreNodeCount')]"
       },
       "properties": {
@@ -1127,7 +1170,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -b ', variables('locator2VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     }
@@ -1135,11 +1178,19 @@
   "outputs": {
     "locator1PublicIP": {
       "type": "string",
-      "value": "[concat('http://',reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locator1PublicIPName'))).dnsSettings.fqdn,':4040/')]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locator1PublicIPName'))).dnsSettings.fqdn)]"
     },
     "locator2PublicIP": {
       "type": "string",
-      "value": "[concat('http://',reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locator2PublicIPName'))).dnsSettings.fqdn,':4040/')]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locator2PublicIPName'))).dnsSettings.fqdn)]"
+    },
+    "lead1PublicIP": {
+      "type": "string",
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('lead1PublicIPName'))).dnsSettings.fqdn)]"
+    },
+    "lead2PublicIP": {
+      "type": "string",
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('lead2PublicIPName'))).dnsSettings.fqdn)]"
     }
   }
 }

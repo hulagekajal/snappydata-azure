@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -u BASEURL
-# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -u https://raw.githubusercontent.com/arsenvlad/snappydata-azure/master
+# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -a LOCATOR1HOSTNAME -b LOCATOR2HOSTNAME -u BASEURL
+# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -a av-locator1 -b av-locator2 -u https://raw.githubusercontent.com/arsenvlad/snappydata-azure/master
 
 log()
 {
@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:u:" opt; do
+while getopts "t:i:s:c:a:b:u:" opt; do
 	log "Option $opt set with value (${OPTARG})"
 	case "$opt" in
 		t)	NODETYPE=$OPTARG
@@ -24,6 +24,10 @@ while getopts "t:i:s:c:u:" opt; do
 		s)	STARTADDRESS=$OPTARG
 		;;
 		c)	DATASTORENODECOUNT=$OPTARG
+		;;
+		a)	LOCATOR1HOSTNAME=$OPTARG
+		;;
+		b)	LOCATOR2HOSTNAME=$OPTARG
 		;;
 		u)	BASEURL=$OPTARG
 		;;
@@ -122,11 +126,19 @@ wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.win
 wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
 wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
 
-# TODO: 
-# Is it possible to start each node independently without passwordless SSH access between the nodes?
-# Or is the only option to specify all of the node IPs in the proper template files?
-# What is the order of the start-up for different node types? 
-# How should both locators and leaders be started?
+# The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
+
+if [ "$NODETYPE" == "locator" ]; then
+	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+fi
+
+if [ "$NODETYPE" == "datastore" ]; then
+	${DIR}/bin/snappy-shell server start -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+fi
+
+if [ "$NODETYPE" == "lead" ]; then
+	${DIR}/bin/snappy-shell leader start -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+fi
 
 # ---------------------------------------------------------------------------------------------
 
