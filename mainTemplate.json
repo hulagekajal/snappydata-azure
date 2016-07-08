@@ -298,7 +298,7 @@
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
     "locator1PublicIPName": "[concat(parameters('clusterName'),'-locator1-publicip')]",
     "dnsNameForLocator1PublicIP": "[concat(uniqueString(resourceGroup().id,'l1'),parameters('clusterName'),'1')]",
-    "dnsNameForLocator2PublicIP": "[concat(uniqueString(resourceGroup().id,'l1'),parameters('clusterName'),'2')]",
+    "dnsNameForLocator2PublicIP": "[concat(uniqueString(resourceGroup().id,'l2'),parameters('clusterName'),'2')]",
     "locator2PublicIPName": "[concat(parameters('clusterName'),'-locator2-publicip')]",
     "locatorAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
@@ -641,7 +641,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t locator1', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
@@ -651,7 +651,9 @@
       "name": "start_snappydata",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('locator1VmName'), '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locator1VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locator2VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leader1VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leader2VmName'), '/extensions/init')]",
         "dataStoreExtensionsCopy"
       ],
       "properties": {
@@ -675,7 +677,7 @@
               "fileUris": [
                 "[variables('scriptUrlStartSnappyData')]"
               ],
-              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator1', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
             }
           }
         }
