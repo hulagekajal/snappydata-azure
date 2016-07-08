@@ -129,15 +129,15 @@ wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.win
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy-shell server start -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy-shell leader start -locators={LOCATOR1HOSTNAME}:10334,{LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
