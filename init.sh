@@ -84,23 +84,12 @@ fi
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL"
 
-download()
-{	
-	# Clear download directory
-	rm -rf *.*
-	
-	# Download scripts
-	curl -O ${BASEURL}/init.sh
-	
-	# Download binaries
-	# curl -O ${BASEURL}/
-}
-
+# Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
 create_internal_ip_file()
 {
 	# Generate IP addresses of the nodes based on the convention of locator1, locator2, leader1, leader2, data stores
 	IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
-	for (( c=0; c<2+$SEGMENTHOSTSCOUNT; c++ ))
+	for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
 	do
 		octet1=${startaddress_parts[0]}
 		octet2=${startaddress_parts[1]}
@@ -114,6 +103,24 @@ create_internal_ip_file()
 # ============================================================================================================
 # MAIN
 # ============================================================================================================
+
+yum install -y java-1.8.0-openjdk
+
+export DIR=/opt/snappydata
+mkdir -p ${DIR}
+
+wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v0.5/snappydata-0.5-bin.tar.gz
+
+# Extract the contents of the archive to /opt/snappydata directory without the top folder
+tar -zxvf snappydata-0.5-bin.tar.gz --directory ${DIR} --strip 1
+
+cd ${DIR}
+
+# TODO: 
+# Is it possible to start each node independently without passwordless SSH access between the nodes?
+# Or is the only option to specify all of the node IPs in the proper template files?
+# What is the order of the start-up for different node types? 
+# How should both locators and leaders be started?
 
 # ---------------------------------------------------------------------------------------------
 
