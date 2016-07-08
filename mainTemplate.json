@@ -325,7 +325,7 @@
     "locator2VmName": "[concat(parameters('clusterName'),'-locator2')]",
     "lead1NicName": "[concat(parameters('clusterName'),'-lead1-nic')]",
     "lead1PrivateIPAddress": "10.0.1.6",
-    "lead1VmName": "[concat(parameters('clusterName'),'-lead')]",
+    "lead1VmName": "[concat(parameters('clusterName'),'-lead1')]",
     "lead2NicName": "[concat(parameters('clusterName'),'-lead2-nic')]",
     "lead2PrivateIPAddress": "10.0.1.7",
     "lead2VmName": "[concat(parameters('clusterName'),'-lead2')]",
