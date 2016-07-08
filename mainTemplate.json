@@ -123,7 +123,7 @@
         "description": "VM size"
       }
     },
-    "leaderVmSize": {
+    "leadVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "allowedValues": [
@@ -305,8 +305,8 @@
       "faultDomainCount": "2",
       "updateDomainCount": "5"
     },
-    "leaderAvailabilitySetSettings": {
-      "name": "[concat(parameters('clusterName'),'-as-leader')]",
+    "leadAvailabilitySetSettings": {
+      "name": "[concat(parameters('clusterName'),'-as-lead')]",
       "faultDomainCount": "2",
       "updateDomainCount": "5"
     },
@@ -323,12 +323,12 @@
     "locator2NicName": "[concat(parameters('clusterName'),'-locator2-nic')]",
     "locator2PrivateIPAddress": "10.0.1.5",
     "locator2VmName": "[concat(parameters('clusterName'),'-locator2')]",
-    "leader1NicName": "[concat(parameters('clusterName'),'-leader1-nic')]",
-    "leader1PrivateIPAddress": "10.0.1.6",
-    "leader1VmName": "[concat(parameters('clusterName'),'-leader1')]",
-    "leader2NicName": "[concat(parameters('clusterName'),'-leader2-nic')]",
-    "leader2PrivateIPAddress": "10.0.1.7",
-    "leader2VmName": "[concat(parameters('clusterName'),'-leader2')]",
+    "lead1NicName": "[concat(parameters('clusterName'),'-lead1-nic')]",
+    "lead1PrivateIPAddress": "10.0.1.6",
+    "lead1VmName": "[concat(parameters('clusterName'),'-lead')]",
+    "lead2NicName": "[concat(parameters('clusterName'),'-lead2-nic')]",
+    "lead2PrivateIPAddress": "10.0.1.7",
+    "lead2VmName": "[concat(parameters('clusterName'),'-lead2')]",
     "dataStoreStorageAccountArray": [
       "[concat(uniqueString(resourceGroup().id,'0'),parameters('clusterName'),'0')]",
       "[concat(uniqueString(resourceGroup().id,'1'),parameters('clusterName'),'1')]",
@@ -508,11 +508,11 @@
     {
       "apiVersion": "[variables('apiVersions').compute.availabilitySets]",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('leaderAvailabilitySetSettings').name]",
+      "name": "[variables('leadAvailabilitySetSettings').name]",
       "location": "[parameters('location')]",
       "properties": {
-        "platformFaultDomainCount": "[variables('leaderAvailabilitySetSettings').faultDomainCount]",
-        "platformUpdateDomainCount": "[variables('leaderAvailabilitySetSettings').updateDomainCount]"
+        "platformFaultDomainCount": "[variables('leadAvailabilitySetSettings').faultDomainCount]",
+        "platformUpdateDomainCount": "[variables('leadAvailabilitySetSettings').updateDomainCount]"
       }
     },
     {
@@ -652,8 +652,8 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('locator1VmName'), '/extensions/init')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('locator2VmName'), '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leader1VmName'), '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leader2VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'), '/extensions/init')]",
         "dataStoreExtensionsCopy"
       ],
       "properties": {
@@ -794,7 +794,7 @@
     {
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('leader1NicName')]",
+      "name": "[variables('lead1NicName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
@@ -805,7 +805,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('leader1PrivateIPAddress')]",
+              "privateIPAddress": "[variables('lead1PrivateIPAddress')]",
               "subnet": {
                 "id": "[variables('subnetDataID')]"
               }
@@ -817,26 +817,26 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('leader1VmName')]",
+      "name": "[variables('lead1VmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/availabilitySets/', variables('leaderAvailabilitySetSettings').name)]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('sharedStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('leader1NicName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('lead1NicName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "tags": {
-        "Name": "[variables('leader1VmName')]"
+        "Name": "[variables('lead1VmName')]"
       },
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leaderAvailabilitySetSettings').name)]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leadAvailabilitySetSettings').name)]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('leaderVmSize')]"
+          "vmSize": "[parameters('leadVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('leader1VmName')]",
+          "computerName": "[variables('lead1VmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -851,7 +851,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('sharedStorageAccount'), '.blob.core.windows.net/vhds/', variables('leader1VmName'), '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('sharedStorageAccount'), '.blob.core.windows.net/vhds/', variables('lead1VmName'), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -866,7 +866,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('leader1NicName'))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('lead1NicName'))]",
               "properties": {
                 "primary": true
               }
@@ -878,10 +878,10 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('leader1VmName'), '/init')]",
+      "name": "[concat(variables('lead1VmName'), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leader1VmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -891,14 +891,14 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t leader', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('leader1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
     {
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('leader2NicName')]",
+      "name": "[variables('lead2NicName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
@@ -909,7 +909,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('leader2PrivateIPAddress')]",
+              "privateIPAddress": "[variables('lead2PrivateIPAddress')]",
               "subnet": {
                 "id": "[variables('subnetDataID')]"
               }
@@ -921,26 +921,26 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('leader2VmName')]",
+      "name": "[variables('lead2VmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/availabilitySets/', variables('leaderAvailabilitySetSettings').name)]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('sharedStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('leader2NicName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('lead2NicName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "tags": {
-        "Name": "[variables('leader2VmName')]"
+        "Name": "[variables('lead2VmName')]"
       },
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leaderAvailabilitySetSettings').name)]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leadAvailabilitySetSettings').name)]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('leaderVmSize')]"
+          "vmSize": "[parameters('leadVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('leader2VmName')]",
+          "computerName": "[variables('lead2VmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -955,7 +955,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('sharedStorageAccount'), '.blob.core.windows.net/vhds/', variables('leader2VmName'), '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('sharedStorageAccount'), '.blob.core.windows.net/vhds/', variables('lead2VmName'), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -970,7 +970,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('leader2NicName'))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('lead2NicName'))]",
               "properties": {
                 "primary": true
               }
@@ -982,10 +982,10 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('leader2VmName'), '/init')]",
+      "name": "[concat(variables('lead2VmName'), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leader2VmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -995,7 +995,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t leader', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('leader2NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead2NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
     },
