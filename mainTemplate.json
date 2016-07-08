@@ -297,8 +297,8 @@
     "nsgData": "[concat(parameters('clusterName'),'-nsg-data')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
     "locator1PublicIPName": "[concat(parameters('clusterName'),'-locator1-publicip')]",
-    "dnsNameForLocator1PublicIP": "[concat(uniqueString(resourceGroup().id,'l1'),parameters('clusterName'),'1')]",
-    "dnsNameForLocator2PublicIP": "[concat(uniqueString(resourceGroup().id,'l2'),parameters('clusterName'),'2')]",
+    "dnsNameForLocator1PublicIP": "[concat(parameters('clusterName'),'-locator1-',uniqueString(resourceGroup().id))]",
+    "dnsNameForLocator2PublicIP": "[concat(parameters('clusterName'),'-locator2-',uniqueString(resourceGroup().id))]",
     "locator2PublicIPName": "[concat(parameters('clusterName'),'-locator2-publicip')]",
     "locatorAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
