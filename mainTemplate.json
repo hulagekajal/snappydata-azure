@@ -349,6 +349,20 @@
             }
           },
           {
+            "name": "ssh_rule",
+            "properties": {
+              "description": "Allow SSH access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1527",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "spark_rule",
             "properties": {
               "description": "Allow HTTP access",
