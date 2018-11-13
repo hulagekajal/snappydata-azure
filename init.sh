@@ -127,15 +127,15 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:1527
+	${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy server start -locators=${LOCATOR1HOSTNAME}:1527
+	${DIR}/bin/snappy server start -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy leader start -locators=${LOCATOR1HOSTNAME}:1527
+	${DIR}/bin/snappy leader start -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
