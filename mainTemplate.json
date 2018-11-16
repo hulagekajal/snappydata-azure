@@ -97,7 +97,7 @@
         "description": "VM size"
       }
     },
-    "leadVmSize": {"dataStoreVmSize": {
+    "leadAnddataStoreVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "allowedValues": [
@@ -138,7 +138,7 @@
       "metadata": {
         "description": "VM size"
       }
-    }},
+    },
     "dataStoreNodeCount": {
       "type": "int",
       "defaultValue": 1,
@@ -632,7 +632,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leadAvailabilitySetSettings').name)]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('leadVmSize')]"
+          "vmSize": "[parameters('leadAnddataStoreVmSize')]"
         },
         "osProfile": {
           "computerName": "[variables('lead1VmName')]",
@@ -785,7 +785,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('dataStoreAvailabilitySetSettings').name)]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('dataStoreVmSize')]"
+          "vmSize": "[parameters('leadAnddataStoreVmSize')]"
         },
         "osProfile": {
           "computerName": "[concat(variables('dataStoreVmName'),copyIndex(1))]",
