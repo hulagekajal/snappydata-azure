@@ -210,7 +210,7 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetDataID": "[concat(variables('vnetID'),'/subnets/',variables('subnetData'))]",
     "subnetAppID": "[concat(variables('vnetID'),'/subnets/',variables('subnetApp'))]",
-    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]",  //nsg-app
+    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]", 
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
@@ -362,7 +362,7 @@
       "copy": {
         "name": "locatorPublicIPCopy",
         "count": "[parameters('locatorNodeCount')]"
-      },
+      }
     },
      { 
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
@@ -378,7 +378,7 @@
       "copy": {
         "name": "leadPublicIPCopy",
         "count": "[parameters('leadNodeCount')]"
-      },
+      }
     },
 	 {  
       "apiVersion": "[variables('apiVersions').storage.storageAccounts]",
@@ -618,7 +618,7 @@
 
 
 			  "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[copyIndex()])]"  /// this is not resolved yet
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[copyIndex()])]"  
               },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
@@ -626,9 +626,9 @@
             }
           }
         ]
-      },
+      }
 	 }, 
-{ 
+    { 
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('locatorVmName')[copyIndex()])]",
@@ -691,7 +691,7 @@
             }
           ]
         }
-      },
+      }
 
   },  
 {                
@@ -714,17 +714,9 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat(
-									'sh init.sh',
-								    ' -t locator', 
-                                    ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, 
-                                    ' -s ', variables('subnetDataStartAddress'),
-                                    ' -c ', parameters('dataStoreNodeCount'),
-                                    ' -a ', variables('locatorVmName')[copyIndex()],
-                                    ' -b ', variables('locatorVmName')[1], 
-                                    ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat(	'sh init.sh', ' -t locator', '-i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()], '- b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
         }
-      },
+      }
 
     },
  	
@@ -765,9 +757,9 @@
           }
         }
       }
-    }
+    },
 
-{             
+    {             
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('leadNicName')[copyIndex()]]",
