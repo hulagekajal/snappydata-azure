@@ -171,7 +171,7 @@
         "metadata": {
           "description": "The IP address range that can be used to SSH to the instances"
       }
-    }'
+    },
     "confForLead": {
       "type": "string",
       "defaultValue": "",
