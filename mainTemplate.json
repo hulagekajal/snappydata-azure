@@ -747,10 +747,8 @@
       "type": "Microsoft.Resources/deployments",
       "name": "start_snappydata",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[0], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[1], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[1], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[copyIndex()], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[copyIndex()], '/extensions/init')]",
         "dataStoreInitExtensionsCopy"
       ],
       "properties": {
@@ -759,6 +757,11 @@
           "uri": "[variables('templateUrlStartSnappyData')]",
           "contentVersion": "1.0.0.0"
         },
+	      
+       "copy": {
+        "name": "depl_lead_locator",
+        "count": "[parameters('locatorNodeCount')]"
+       }, 
         "parameters": {
           "apiVersions": {
             "value": "[variables('apiVersions')]"
