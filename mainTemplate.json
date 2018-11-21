@@ -278,6 +278,27 @@
 	"leadPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
+	"locatorPublicIPName": { 
+     "type": "array", 
+     "defaultValue": [ 
+         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
+         "[concat(parameters('clusterName'),'-locator2-publicip')]"
+        
+      ] 
+  	},
+	
+	"dnsNameForLocatorPublicIP": { 
+     "type": "array", 
+     "defaultValue": [ 
+         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
+         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
+        
+      ] 
+  	},
+	
+	"leadPublicIPName": { 
+     "type": "array", 
+     "defaultValue": [ 
          "[concat(parameters('clusterName'),'-lead1-publicip')]", 
          "[concat(parameters('clusterName'),'-lead2-publicip')]"
         
@@ -1036,24 +1057,3 @@
     },
     {           
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(concat(variables('dataStoreVmName'),copyIndex(1)), '/init')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "dataStoreVmsCopy",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator1VmName'), '/extensions/init'))]",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locator2VmName'), '/extensions/init'))]"
-      ],
-      "copy": {
-        "name": "dataStoreInitExtensionsCopy",
-        "count": "[parameters('dataStoreNodeCount')]"
-      },
-      "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.5",
-        "settings": {
-          "fileUris": [
-            "[variables('scriptUrlInit')]"
-          ],
-          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[0], ' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
