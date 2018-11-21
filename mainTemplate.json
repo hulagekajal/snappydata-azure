@@ -107,7 +107,7 @@
     },
 	"leadAndDataStoreVmSize":{
       "type": "string",
-      "defaultValue": "Standard_D3",
+      "defaultValue": "Standard_D2_v2",
       "allowedValues": [
        "Standard_D3",
         "Standard_D4",
@@ -177,25 +177,24 @@
         "type": "string",
         "defaultValue": "",
         "metadata": {
-          "description": "Provide conf paramters for lead"
-      }
+         "description": "Provide conf paramters for lead"
     },
+
     "confForLocator": {
         "type": "string",
         "defaultValue": "",
         "metadata": {
-           "description": "Provide conf paramters for locator"
-      }
+          "description": "Provide conf paramters for lead"
      },
-    "confForDataStore": {
+
+     "confForDataStore" : {
         "type": "string",
         "defaultValue": "",
         "metadata": {
-          "description": "Provide conf paramters for DataStore"
-      }
-    }
-
+          "description": "Provide conf paramters for lead"
+       }
   },
+     
 "variables": {
     "apiVersions": {
       "resources": {
@@ -217,7 +216,7 @@
         "virtualMachineExtensions": "2016-03-30"
       }
     },
-    "baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
+	"baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
     "templateUrlStartSnappyData": "[concat(variables('baseUrl'),'startSnappyData.json')]",
     "scriptUrlInit": "[concat(variables('baseUrl'),'init.sh')]",
     "scriptUrlStartSnappyData": "[concat(variables('baseUrl'),'start_snappydata.sh')]",
@@ -232,10 +231,32 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetDataID": "[concat(variables('vnetID'),'/subnets/',variables('subnetData'))]",
     "subnetAppID": "[concat(variables('vnetID'),'/subnets/',variables('subnetApp'))]",
-    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]", 
+    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]",
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
+    
+	"locatorPublicIPName": { 
+     "type": "array", 
+     "defaultValue": [ 
+         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
+         "[concat(parameters('clusterName'),'-locator2-publicip')]"
+        
+      ] 
+  	},
+	
+	"dnsNameForLocatorPublicIP": { 
+     "type": "array", 
+     "defaultValue": [ 
+         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
+         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
+        
+      ] 
+  	},
+	
+	"leadPublicIPName": { 
+     "type": "array", 
+     "defaultValue": [ 
 	"locatorPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
@@ -1036,27 +1057,3 @@
             "[variables('scriptUrlInit')]"
           ],
           "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[0], ' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
-        }
-      }
-    }
-  ],
-
- "outputs": {
-    "locator1PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[0])).dnsSettings.fqdn)]"
-    },
-    "locator2PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[1])).dnsSettings.fqdn)]"
-    },
-    "lead1PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[0])).dnsSettings.fqdn)]"
-    },
-    "lead2PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[1])).dnsSettings.fqdn)]"
-    }
-  }
-}
