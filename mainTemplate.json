@@ -217,7 +217,7 @@
         "virtualMachineExtensions": "2016-03-30"
       }
     },
-	"baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
+    "baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
     "templateUrlStartSnappyData": "[concat(variables('baseUrl'),'startSnappyData.json')]",
     "scriptUrlInit": "[concat(variables('baseUrl'),'init.sh')]",
     "scriptUrlStartSnappyData": "[concat(variables('baseUrl'),'start_snappydata.sh')]",
@@ -236,7 +236,6 @@
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
-    
 	"locatorPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
