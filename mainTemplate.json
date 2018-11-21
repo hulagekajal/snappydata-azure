@@ -107,7 +107,7 @@
     },
 	"leadAndDataStoreVmSize":{
       "type": "string",
-      "defaultValue": "Standard_D2_v2",
+      "defaultValue": "Standard_D3",
       "allowedValues": [
        "Standard_D3",
         "Standard_D4",
@@ -771,7 +771,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "[variables('locatorVmName')[0]"
+            "value": "[variables('locatorVmName')[0]]"
           },
           "extensionSettings": {
             "value": {
