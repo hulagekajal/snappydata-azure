@@ -747,8 +747,10 @@
       "type": "Microsoft.Resources/deployments",
       "name": "start_snappydata",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[copyIndex()], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[copyIndex()], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[0], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[1], '/extensions/init')]",
+	"[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[1], '/extensions/init')]",
         "dataStoreInitExtensionsCopy"
       ],
       "properties": {
