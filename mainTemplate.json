@@ -772,7 +772,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "[variables('locatorVmName')[0]"
+            "value": "[variables('locatorVmName')[0]]"
           },
           "extensionSettings": {
             "value": {
