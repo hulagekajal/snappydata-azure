@@ -27,8 +27,6 @@ while getopts "t:i:s:c:a:u:" opt; do
 		;;
 		a)	LOCATOR1HOSTNAME=$OPTARG
 		;;
-                b)      LOCATOR2HOSTNAME=$OPTARG
-                ;)
 		u)	BASEURL=$OPTARG
 		;;
 	esac
