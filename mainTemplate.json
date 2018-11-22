@@ -376,17 +376,18 @@
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('locatorPublicIPName')[copyIndex()]]",
+       "copy": {
+        "name": "locatorPublicIPCopy",
+        "count": "[parameters('locatorNodeCount')]"
+      },
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
           "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex()]]"
         }
-      },
-      "copy": {
-        "name": "locatorPublicIPCopy",
-        "count": "[parameters('locatorNodeCount')]"
       }
+     
     },
      { 
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
