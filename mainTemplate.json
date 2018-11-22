@@ -375,7 +375,7 @@
     {  
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('locatorPublicIPName')[copyIndex()]]",
+      "name": "[variables('locatorPublicIPName')[copyIndex(1)]]",
        "copy": {
         "name": "locatorPublicIPCopy",
         "count": "[parameters('locatorNodeCount')]"
