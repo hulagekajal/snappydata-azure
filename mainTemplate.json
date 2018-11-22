@@ -235,7 +235,6 @@
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
     
-<<<<<<< HEAD
 	"locatorPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
@@ -255,127 +254,6 @@
   	},
 	
 	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-    "dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-    "leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-    "dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-||||||| merged common ancestors
-	"locatorPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-	"dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-	"dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-=======
-     "locatorPublicIPName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-<<<<<<< HEAD
-    "dnsNameForLocatorPublicIP": { 
-||||||| merged common ancestors
-	"dnsNameForLocatorPublicIP": { 
-=======
-     "dnsNameForLocatorPublicIP": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-<<<<<<< HEAD
-    "leadPublicIPName": { 
-||||||| merged common ancestors
-	"leadPublicIPName": { 
-=======
-     "leadPublicIPName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-lead1-publicip')]", 
@@ -383,14 +261,8 @@
         
       ] 
   	},
-
-<<<<<<< HEAD
+	
     "dnsNameForLeadPublicIP": { 
-||||||| merged common ancestors
-	"dnsNameForLeadPublicIP": { 
-=======
-     "dnsNameForLeadPublicIP": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('dnsNamePrefix'),'-lead1-',uniqueString(resourceGroup().id))]", 
@@ -399,13 +271,7 @@
       ] 
   	},
 	
-<<<<<<< HEAD
-    "locatorPrivateIPAddress": { 
-||||||| merged common ancestors
-	"locatorPrivateIPAddress": { 
-=======
-     "locatorPrivateIPAddress": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
+      " LocatorPrivateIPAddress": { 
      "type": "array", 
      "defaultValue": [ 
         "10.0.1.4",
@@ -413,84 +279,44 @@
       ] 
   	},
 
-<<<<<<< HEAD
-    "leadPrivateIPAddress": { 
-||||||| merged common ancestors
-	"leadPrivateIPAddress": { 
-=======
      "leadPrivateIPAddress": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
-     "defaultValue": [ 
-        "10.0.1.6",
-        "10.0.1.7"
-      ] 
-  	},	
-
-<<<<<<< HEAD
-    "locatorVmName": { 
-||||||| merged common ancestors
-	"locatorVmName": { 
-=======
+     "defaultValue": [
+       "10.0.1.6",
+       "10.0.1.7"
+     ]
+     },
+  
      "locatorVmName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1')]",
         "[concat(parameters('clusterName'),'-locator2')]"
       ] 
   	},
-
-<<<<<<< HEAD
-    "locatorNicName": { 
-||||||| merged common ancestors
-	"locatorNicName": { 
-=======
+     
      "locatorNicName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1-nic')]",
         "[concat(parameters('clusterName'),'-locator2-nic')]"
       ] 
   	},
-
-<<<<<<< HEAD
-    "leadVmName": { 
-||||||| merged common ancestors
-	"leadVmName": { 
-=======
      "leadVmName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1')]",
         "[concat(parameters('clusterName'),'-lead2')]"
       ] 
   	},
-
-<<<<<<< HEAD
-    "leadNicName": { 
-||||||| merged common ancestors
-	"leadNicName": { 
-=======
      "leadNicName": { 
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1-nic')]",
         "[concat(parameters('clusterName'),'-lead2-nic')]"
       ] 
   	},
-
-
-<<<<<<< HEAD
-    "locatorAvailabilitySetSettings": {
-||||||| merged common ancestors
-	"locatorAvailabilitySetSettings": {
-=======
       "locatorAvailabilitySetSettings": {
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
       "faultDomainCount": "2",
       "updateDomainCount": "5"
@@ -1208,12 +1034,6 @@
         }
 
       }
-<<<<<<< HEAD
-||||||| merged common ancestors
-    },
-    {           
-      "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
-=======
     },
     {           
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
@@ -1262,4 +1082,4 @@
     }
   }
 }
->>>>>>> 00cf5233825db50bf8f996c110419f11185abff5
+
