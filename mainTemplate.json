@@ -234,10 +234,10 @@
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
-    "locator1VmName": "[concat(parameters('clusterName'),'-locator1')]",
-    "locator2VmName": "[concat(parameters('clusterName'),'-locator2')]",
-    "lead1VmName": "[concat(parameters('clusterName'),'-lead1')]",
-    "lead2VmName": "[concat(parameters('clusterName'),'-lead2')]",	 
+    "locatorVmName": "[concat(parameters('clusterName'),'-locator')]",
+  
+    "leadVmName": "[concat(parameters('clusterName'),'-lead')]",
+    "locatorPublicIPName":"[concat(parameters('clusterName'),'-locator-publicip-')]" 
     
 	"locatorPublicIPName": { 
      "type": "array", 
@@ -375,7 +375,8 @@
     {  
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('locatorPublicIPName')[copyIndex(1)]]",
+     
+      "name": "[concat(variables('locatorPublicIPName')copyIndex(1))]",
        "copy": {
         "name": "locatorPublicIPCopy",
         "count": "[parameters('locatorNodeCount')]"
