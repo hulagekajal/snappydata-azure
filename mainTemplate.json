@@ -625,7 +625,7 @@
    {
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('locatorNicName')[copyIndex()]]",
+      "name": "[concat(variables('locatorNicName'),copyIndex(1))]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
@@ -663,7 +663,7 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('locatorAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('locatorStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',variables('locatorNicName')[copyIndex()])]",
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('locatorNicName'),copyIndex(1)))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
      "copy": {
@@ -711,7 +711,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))]",
               "properties": {
                 "primary": true
               }
@@ -750,7 +750,7 @@
     {             
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('leadNicName')[copyIndex()]]",
+      "name": "[concat(variables('leadNicName'),copyIndex(1))]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
@@ -786,7 +786,7 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',variables('leadNicName')[copyIndex()])]",
+        "[concat('Microsoft.Network/networkInterfaces/',conat(variables('leadNicName'),copyIndex(1)))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "copy": {
@@ -834,7 +834,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',conat(variables('leadNicName'),copyIndex(1)))]",
               "properties": {
                 "primary": true
               }
