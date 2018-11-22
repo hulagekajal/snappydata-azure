@@ -239,7 +239,7 @@
     "leadVmName": "[concat(parameters('clusterName'),'-lead')]",
     "locatorPublicIPName":"[concat(parameters('clusterName'),'-locator-publicip-')]" ,
     
-	"locatorPublicIPName": { 
+	"locatorPublicIPNameNew": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-locator1-publicip')]", 
