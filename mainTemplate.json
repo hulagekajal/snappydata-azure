@@ -234,6 +234,10 @@
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
+    "locator1VmName": "[concat(parameters('clusterName'),'-locator1')]",
+    "locator2VmName": "[concat(parameters('clusterName'),'-locator2')]",
+    "lead1VmName": "[concat(parameters('clusterName'),'-lead1')]",
+    "lead2VmName": "[concat(parameters('clusterName'),'-lead2')]",	 
     
 	"locatorPublicIPName": { 
      "type": "array", 
@@ -745,10 +749,10 @@
       "type": "Microsoft.Resources/deployments",
       "name": "start_snappydata",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[0], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[1], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[1], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locator1VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locator2VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead1VmName'), '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('lead2VmName'), '/extensions/init')]",
         "dataStoreInitExtensionsCopy"
       ],
       "properties": {
@@ -765,7 +769,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "[variables('locatorVmName')[0]]"
+            "value": "[variables('locator1VmName')]"
           },
           "extensionSettings": {
             "value": {
