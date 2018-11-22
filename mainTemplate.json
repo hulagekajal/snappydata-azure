@@ -721,9 +721,6 @@
       }
 
     },
- 	
-	
-
      {             
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
