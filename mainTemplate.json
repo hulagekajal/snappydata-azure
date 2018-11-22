@@ -726,8 +726,8 @@
       "dependsOn": [
          "[concat('Microsoft.Compute/virtualMachines/', variables('LocatorVmName')[copyIndex()])]"
       ],
-	    "copy": {
-        "name": "dataStoreInitExtensionsCopy",
+       "copy": {
+        "name": "locatorInitExtensionsCopy",
         "count": "[parameters('locatorNodeCount')]"
        }, 
       "properties": {
@@ -852,6 +852,11 @@
         "dataStoreInitExtensionsCopy",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('leadVmName')[copyIndex(1)], '/extensions/init'))]"
       ],
+	"copy": {
+        "name": "leadInitExtensionsCopy",
+        "count": "[parameters('leadNodeCount')]"
+       }, 
+      
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
