@@ -10,7 +10,7 @@
         "artifactsBaseUrl": ""
       }
     },
-	 "location": {
+    "location": {
       "type": "string",
       "defaultValue": "eastasia",
       "metadata": {
@@ -97,7 +97,7 @@
         "description": "VM size"
       }
     },
-	"locatorNodeCount": {
+    "locatorNodeCount": {
       "type": "int",
       "defaultValue": 1,
       "allowedValues": [ 1, 2 ],
@@ -105,9 +105,9 @@
         "description": "The number of virtual machines instances to provision for the locator nodes"
       }
     },
-	"leadAndDataStoreVmSize":{
+    "leadAndDataStoreVmSize":{
       "type": "string",
-      "defaultValue": "Standard_D2_v2",
+      "defaultValue": "Standard_D3",
       "allowedValues": [
        "Standard_D3",
         "Standard_D4",
@@ -148,7 +148,7 @@
       }
     
 },
-     "dataStoreNodeCount": {
+    "dataStoreNodeCount": {
         "type": "int",
         "defaultValue": 1,
         "allowedValues": [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
@@ -156,7 +156,7 @@
            "description": "The number of virtual machines instances to provision for the data store nodes"
       }
     },
-     "leadNodeCount": {
+    "leadNodeCount": {
         "type": "int",
         "defaultValue": 1,
         "allowedValues": [ 1, 2 ],
@@ -172,29 +172,28 @@
           "description": "The IP address range that can be used to SSH to the instances"
       }
     },
-
     "confForLead": {
-        "type": "string",
-        "defaultValue": "",
-        "metadata": {
-         "description": "Provide conf paramters for lead"
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for lead"
+      }
     },
-
     "confForLocator": {
-        "type": "string",
-        "defaultValue": "",
-        "metadata": {
-          "description": "Provide conf paramters for lead"
-     },
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for locator"
+      }
+    },
+    "confForDataStore": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for DataStore"
+      }
 
-     "confForDataStore" : {
-        "type": "string",
-        "defaultValue": "",
-        "metadata": {
-          "description": "Provide conf paramters for lead"
-       }
   },
-     
 "variables": {
     "apiVersions": {
       "resources": {
@@ -216,7 +215,7 @@
         "virtualMachineExtensions": "2016-03-30"
       }
     },
-	"baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
+    "baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
     "templateUrlStartSnappyData": "[concat(variables('baseUrl'),'startSnappyData.json')]",
     "scriptUrlInit": "[concat(variables('baseUrl'),'init.sh')]",
     "scriptUrlStartSnappyData": "[concat(variables('baseUrl'),'start_snappydata.sh')]",
@@ -231,12 +230,12 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetDataID": "[concat(variables('vnetID'),'/subnets/',variables('subnetData'))]",
     "subnetAppID": "[concat(variables('vnetID'),'/subnets/',variables('subnetApp'))]",
-    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]",
+    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]", 
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
     
-	"locatorPublicIPName": { 
+     "locatorPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-locator1-publicip')]", 
@@ -245,7 +244,7 @@
       ] 
   	},
 	
-	"dnsNameForLocatorPublicIP": { 
+     "dnsNameForLocatorPublicIP": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
@@ -254,49 +253,7 @@
       ] 
   	},
 	
-	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-	"dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-	"leadPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-	"locatorPublicIPName": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('clusterName'),'-locator1-publicip')]", 
-         "[concat(parameters('clusterName'),'-locator2-publicip')]"
-        
-      ] 
-  	},
-	
-	"dnsNameForLocatorPublicIP": { 
-     "type": "array", 
-     "defaultValue": [ 
-         "[concat(parameters('dnsNamePrefix'),'-locator1-',uniqueString(resourceGroup().id))]", 
-         "[concat(parameters('dnsNamePrefix'),'-locator2-',uniqueString(resourceGroup().id))]"
-        
-      ] 
-  	},
-	
-	"leadPublicIPName": { 
+     "leadPublicIPName": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-lead1-publicip')]", 
@@ -305,7 +262,7 @@
       ] 
   	},
 
-	"dnsNameForLeadPublicIP": { 
+     "dnsNameForLeadPublicIP": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('dnsNamePrefix'),'-lead1-',uniqueString(resourceGroup().id))]", 
@@ -314,7 +271,7 @@
       ] 
   	},
 	
-	"locatorPrivateIPAddress": { 
+     "locatorPrivateIPAddress": { 
      "type": "array", 
      "defaultValue": [ 
         "10.0.1.4",
@@ -322,7 +279,7 @@
       ] 
   	},
 
-	"leadPrivateIPAddress": { 
+     "leadPrivateIPAddress": { 
      "type": "array", 
      "defaultValue": [ 
         "10.0.1.6",
@@ -330,7 +287,7 @@
       ] 
   	},	
 
-	"locatorVmName": { 
+     "locatorVmName": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1')]",
@@ -338,7 +295,7 @@
       ] 
   	},
 
-	"locatorNicName": { 
+     "locatorNicName": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1-nic')]",
@@ -346,7 +303,7 @@
       ] 
   	},
 
-	"leadVmName": { 
+     "leadVmName": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1')]",
@@ -354,7 +311,7 @@
       ] 
   	},
 
-	"leadNicName": { 
+     "leadNicName": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1-nic')]",
@@ -363,17 +320,17 @@
   	},
 
 
-	"locatorAvailabilitySetSettings": {
+      "locatorAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
       "faultDomainCount": "2",
       "updateDomainCount": "5"
     },
-    "leadAvailabilitySetSettings": {
+      "leadAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-lead')]",
       "faultDomainCount": "2",
       "updateDomainCount": "5"
     },
-    "dataStoreAvailabilitySetSettings": {
+      "dataStoreAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-datastore')]",
       "faultDomainCount": "3",
       "updateDomainCount": "10"
@@ -405,12 +362,12 @@
         ]
       }
     },
-   "linuxConfiguration_password": { },
+    "linuxConfiguration_password": { },
     "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]"
   },
 
 
-  "resources": [
+    "resources": [
     {  
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -790,7 +747,7 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[0], '/extensions/init')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[1], '/extensions/init')]",
-	"[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[1], '/extensions/init')]",
         "dataStoreInitExtensionsCopy"
       ],
@@ -800,11 +757,6 @@
           "uri": "[variables('templateUrlStartSnappyData')]",
           "contentVersion": "1.0.0.0"
         },
-	      
-       "copy": {
-        "name": "depl_lead_locator",
-        "count": "[parameters('locatorNodeCount')]"
-       }, 
         "parameters": {
           "apiVersions": {
             "value": "[variables('apiVersions')]"
