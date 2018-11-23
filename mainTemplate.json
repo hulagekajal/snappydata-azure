@@ -829,10 +829,10 @@
       "name": "[concat(concat(variables('leadVmName'),copyIndex(1)), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('leadVmName'),copyIndex(1)))]",
-         "locatorVmsCopy",
+        "locatorVmsCopy",
         "dataStoreInitExtensionsCopy",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(concat(variables('leadVmName'),copyIndex(1)), '/extensions/init'))]"
+	"leadVmsCopy",
+           
       ],
 	"copy": {
         "name": "leadInitExtensionsCopy",
