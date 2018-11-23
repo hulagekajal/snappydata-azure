@@ -629,7 +629,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-		"[concat('Microsoft.Network/publicIPAddresses/', conat(variables('locatorPublicIPName'),copyIndex(1)))]"
+		"[concat('Microsoft.Network/publicIPAddresses/', concat(variables('locatorPublicIPName'),copyIndex(1)))]"
       ],
 	  "copy": {
         "name": "locatorNicsCopy",
@@ -781,12 +781,12 @@
   {
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[conat(variables('leadVmName'),copyIndex(1))]", 
+      "name": "[concat(variables('leadVmName'),copyIndex(1))]", 
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',conat(variables('leadNicName'),copyIndex(1)))]",
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('leadNicName'),copyIndex(1)))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "copy": {
@@ -794,7 +794,7 @@
         "count": "[parameters('leadNodeCount')]"
       },
       "tags": {
-        "Name": "[conat(variables('leadVmName'),copyIndex(1))]"
+        "Name": "[concat(variables('leadVmName'),copyIndex(1))]"
       },
       "properties": {
         "availabilitySet": {
@@ -804,7 +804,7 @@
           "vmSize": "[parameters('leadAndDataStoreVmSize')]"
         },
         "osProfile": {
-          "computerName": "[conat(variables('leadVmName'),copyIndex(1))]",
+          "computerName": "[concat(variables('leadVmName'),copyIndex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -819,7 +819,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/', conat(variables('leadVmName'),copyIndex(1)), '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/', concat(variables('leadVmName'),copyIndex(1)), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -834,7 +834,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',conat(variables('leadNicName'),copyIndex(1)))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('leadNicName'),copyIndex(1)))]",
               "properties": {
                 "primary": true
               }
@@ -846,14 +846,14 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(conat(variables('leadVmName'),copyIndex(1)), '/init')]",
+      "name": "[concat(concat(variables('leadVmName'),copyIndex(1)), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', conat(variables('leadVmName'),copyIndex(1)))]",
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('leadVmName'),copyIndex(1)))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[0], '/extensions/init'))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[1], '/extensions/init'))]",
         "dataStoreInitExtensionsCopy",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(conat(variables('leadVmName'),copyIndex(1)), '/extensions/init'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', concat(concat(variables('leadVmName'),copyIndex(1)), '/extensions/init'))]"
       ],
 	"copy": {
         "name": "leadInitExtensionsCopy",
