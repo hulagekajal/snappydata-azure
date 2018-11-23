@@ -1009,20 +1009,14 @@
  "outputs": {
     "locator1PublicIP": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[0])).dnsSettings.fqdn)]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName'))).dnsSettings.fqdn)]"
     },
-    "locator2PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[1])).dnsSettings.fqdn)]"
-    },
+   
     "lead1PublicIP": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[0])).dnsSettings.fqdn)]"
-    },
-    "lead2PublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[1])).dnsSettings.fqdn)]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName'))).dnsSettings.fqdn)]"
     }
+   
   }
 }
 
