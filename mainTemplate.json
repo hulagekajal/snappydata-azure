@@ -214,6 +214,7 @@
         "metadata": {
           "description": "The IP address range that can be used to SSH to the instances"
       }
+<<<<<<< HEAD
     },
     "confForLead": {
       "type": "string",
@@ -236,9 +237,38 @@ e     "metadata": {
         "description": "Provide conf paramters for DataStore"
 >>>>>>> cbbc82fe236e0b5f973014bafa225c58c5e3e9be
       }
+||||||| merged common ancestors
+=======
+    },
+    "confForLead": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for lead"
+      }
+    },
+     "confForLocator": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for locator"
+      }
+    },
+    "confForDataStore": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Provide conf paramters for DataStore"
+      }
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+||||||| merged common ancestors
+
+=======
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
   },
 "variables": {
 ||||||| merged common ancestors
@@ -284,7 +314,13 @@ e     "metadata": {
     "subnetDataID": "[concat(variables('vnetID'),'/subnets/',variables('subnetData'))]",
     "subnetAppID": "[concat(variables('vnetID'),'/subnets/',variables('subnetApp'))]",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]",
+||||||| merged common ancestors
+    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]",
+=======
+    "leadSecurityRules": "[concat(parameters('clusterName'),'-lead-rules')]", 
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
 ||||||| merged common ancestors
     "nsgApp": "[concat(parameters('clusterName'),'-nsg-app')]",
@@ -349,6 +385,7 @@ e     "metadata": {
       ] 
   	},	
 
+<<<<<<< HEAD
 	"locatorVmName": { 
      "type": "array", 
      "defaultValue": [ 
@@ -397,6 +434,15 @@ e     "metadata": {
     "lead2VmName": "[concat(parameters('clusterName'),'-lead2')]",	 
     
 	"locatorPublicIPName": { 
+||||||| merged common ancestors
+    
+	"locatorPublicIPName": { 
+=======
+    "locatorPublicIPName": "[concat(parameters('clusterName'),'-locator-publicip-')]",
+    "leadPublicIPName":"[concat(parameters('clusterName'),'-lead-publicip-1')]",	
+	
+	"locatorPublicIPNameNew": { 
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-locator1-publicip')]", 
@@ -414,7 +460,7 @@ e     "metadata": {
       ] 
   	},
 	
-	"leadPublicIPName": { 
+	"leadPublicIPNameNew": { 
      "type": "array", 
      "defaultValue": [ 
          "[concat(parameters('clusterName'),'-lead1-publicip')]", 
@@ -447,8 +493,12 @@ e     "metadata": {
         "10.0.1.7"
       ] 
   	},	
-
-	"locatorVmName": { 
+"locatorVmName":"[concat(parameters('clusterName'),'-locator-')]",
+"locatorNicName":"[concat(parameters('clusterName'),'-locator-nic-')]",
+"leadVmName":"[concat(parameters('clusterName'),'-lead-')]",
+"leadNicName":"[concat(parameters('clusterName'),'-lead-nic-')]",        
+	
+	"locatorVmNameNew": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1')]",
@@ -456,7 +506,7 @@ e     "metadata": {
       ] 
   	},
 
-	"locatorNicName": { 
+	"locatorNicNameNew": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-locator1-nic')]",
@@ -464,7 +514,7 @@ e     "metadata": {
       ] 
   	},
 
-	"leadVmName": { 
+	"leadVmNameNew": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1')]",
@@ -472,7 +522,7 @@ e     "metadata": {
       ] 
   	},
 
-	"leadNicName": { 
+	"leadNicNameNew": { 
      "type": "array", 
      "defaultValue": [ 
         "[concat(parameters('clusterName'),'-lead1-nic')]",
@@ -559,23 +609,24 @@ e     "metadata": {
     {  
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('locatorPublicIPName')[copyIndex()]]",
+      "name": "[concat(variables('locatorPublicIPName'),copyIndex(1))]",
+       "copy": {
+        "name": "locatorPublicIPCopy",
+        "count": "[parameters('locatorNodeCount')]"
+      },
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
           "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex()]]"
         }
-      },
-      "copy": {
-        "name": "locatorPublicIPCopy",
-        "count": "[parameters('locatorNodeCount')]"
       }
+     
     },
      { 
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('leadPublicIPName')[copyIndex()]]", 
+      "name": "[concat(variables('leadPublicIPName'),copyIndex(1))]", 
       "location": "[parameters('location')]",                          
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
@@ -806,7 +857,7 @@ e     "metadata": {
    {
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('locatorNicName')[copyIndex()]]",
+      "name": "variables('locatorNicName')[1]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
@@ -836,8 +887,15 @@ e     "metadata": {
         ]
       }
 <<<<<<< HEAD
+<<<<<<< HEAD
     },
 
+||||||| merged common ancestors
+    },
+
+=======
+	 }, 
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
     { 
 ||||||| merged common ancestors
     },
@@ -848,7 +906,7 @@ e     "metadata": {
 >>>>>>> cbbc82fe236e0b5f973014bafa225c58c5e3e9be
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('locatorVmName')[copyIndex()])]",
+      "name": "[concat(variables('locatorVmName'),copyIndex(1))]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('locatorAvailabilitySetSettings').name)]",
@@ -861,7 +919,7 @@ e     "metadata": {
         "count": "[parameters('locatorNodeCount')]"
       }, 
 	 "tags": {
-        "Name": "[variables('locatorVmName')[copyIndex()]]"
+      "Name": "[concat(variables('locatorVmName'),copyIndex(1))]",
       },
       "properties": {
         "availabilitySet": {
@@ -871,7 +929,7 @@ e     "metadata": {
           "vmSize": "[parameters('locatorVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('locatorVmName')[copyIndex()]]",
+          "computerName": "[concat(variables('locatorVmName'),copyIndex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -886,7 +944,7 @@ e     "metadata": {
           "osDisk": {
             "name": "osdisk",
            "vhd": {
-              "uri": "[concat('http://', variables('locatorStorageAccount'), '.blob.core.windows.net/vhds/',variables('locatorVmName')[copyIndex()], '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('locatorStorageAccount'), '.blob.core.windows.net/vhds/',concat(variables('locatorVmName'),copyIndex(1)), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -911,6 +969,7 @@ e     "metadata": {
       }
 <<<<<<< HEAD
 
+<<<<<<< HEAD
   },
 
   {                
@@ -922,6 +981,14 @@ e     "metadata": {
   },  
 {                
 >>>>>>> cbbc82fe236e0b5f973014bafa225c58c5e3e9be
+||||||| merged common ancestors
+  },
+
+  {                
+=======
+  },  
+{                
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('LocatorVmName')[copyIndex()], '/init')]",
@@ -930,9 +997,18 @@ e     "metadata": {
          "[concat('Microsoft.Compute/virtualMachines/', variables('LocatorVmName')[copyIndex()])]"
       ],
 <<<<<<< HEAD
+<<<<<<< HEAD
 	  "copy": {
         "name": "dataStoreInitExtensionsCopy",
+||||||| merged common ancestors
+	  "copy": {
+        "name": "dataStoreInitExtensionsCopy",
+=======
+       "copy": {
+        "name": "locatorInitExtensionsCopy",
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
         "count": "[parameters('locatorNodeCount')]"
+<<<<<<< HEAD
        },
 ||||||| merged common ancestors
 =======
@@ -941,6 +1017,11 @@ e     "metadata": {
         "count": "[parameters('locatorNodeCount')]"
        }, 
 >>>>>>> cbbc82fe236e0b5f973014bafa225c58c5e3e9be
+||||||| merged common ancestors
+       },
+=======
+       }, 
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
@@ -950,11 +1031,18 @@ e     "metadata": {
             "[variables('scriptUrlInit')]"
           ],
 <<<<<<< HEAD
+<<<<<<< HEAD
           "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress,' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1],  ' -u ', parameters('artifactsBaseUrl'))]"
+||||||| merged common ancestors
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress,' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1],  ' -u ', parameters('artifactsBaseUrl'))]"
+=======
+          "commandToExecute": "[concat(	'sh init.sh', ' -t locator', '-i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()], '- b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
         }
       }
 
     },
+<<<<<<< HEAD
  	
 	{         
       "apiVersion": "[variables('apiVersions').resources.deployments]",
@@ -1036,7 +1124,50 @@ e     "metadata": {
       }
 <<<<<<< HEAD
      },
+||||||| merged common ancestors
+ 	
+	{         
+      "apiVersion": "[variables('apiVersions').resources.deployments]",
+      "type": "Microsoft.Resources/deployments",
+      "name": "start_snappydata",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[0], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('locatorVmName')[1], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[0], '/extensions/init')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[1], '/extensions/init')]",
+        "dataStoreInitExtensionsCopy"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templateUrlStartSnappyData')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apiVersions": {
+            "value": "[variables('apiVersions')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+        },
+          "vmName": {
+            "value": "[variables('locatorVmName')[copyIndex()]"
+          },
+          "extensionSettings": {
+            "value": {
+              "fileUris": [
+                "[variables('scriptUrlStartSnappyData')]"
+              ],
+              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locatorNicName')[0])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+            }
+          }
+        }
+      }
+     },
+=======
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
 
+<<<<<<< HEAD
      {             
 ||||||| merged common ancestors
     },
@@ -1047,6 +1178,11 @@ e     "metadata": {
 
     {             
 >>>>>>> cbbc82fe236e0b5f973014bafa225c58c5e3e9be
+||||||| merged common ancestors
+     {             
+=======
+    {             
+>>>>>>> 98471cc9b9566e71cd2bbdbc45145bcfcee0ea8b
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('leadNicName')[copyIndex()]]",
@@ -1080,7 +1216,7 @@ e     "metadata": {
   {
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('leadVmName')[copyIndex()]]", 
+      "name": "[conat(variables('leadVmName'),copyIndex(1))]", 
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
@@ -1093,7 +1229,7 @@ e     "metadata": {
         "count": "[parameters('leadNodeCount')]"
       },
       "tags": {
-        "Name": "[variables('leadVmName')[copyIndex()]]"
+        "Name": "[conat(variables('leadVmName'),copyIndex(1))]"
       },
       "properties": {
         "availabilitySet": {
@@ -1103,7 +1239,7 @@ e     "metadata": {
           "vmSize": "[parameters('leadAndDataStoreVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('leadVmName')[copyIndex()]]",
+          "computerName": "[conat(variables('leadVmName'),copyIndex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -1118,7 +1254,7 @@ e     "metadata": {
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/', variables('leadVmName')[copyIndex()], '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/',variables('leadVmName')[0], '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -1145,14 +1281,14 @@ e     "metadata": {
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('leadVmName')[copyIndex()], '/init')]",
+      "name": "[concat(conat(variables('leadVmName'),copyIndex(1)), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[copyIndex()])]",
+        "[concat('Microsoft.Compute/virtualMachines/', conat(variables('leadVmName'),copyIndex(1)))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[0], '/extensions/init'))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[1], '/extensions/init'))]",
         "dataStoreInitExtensionsCopy",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('leadVmName')[copyIndex(1)], '/extensions/init'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', concat(conat(variables('leadVmName'),copyIndex(1)), '/extensions/init'))]"
       ],
 	"copy": {
         "name": "leadInitExtensionsCopy",
@@ -1168,7 +1304,7 @@ e     "metadata": {
           ],
 <<<<<<< HEAD
           
-		"commandToExecute": "[concat('sh init.sh', ' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
+		"commandToExecute": "[concat('sh init.sh',' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
 		}
 ||||||| merged common ancestors
           "commandToExecute": "[concat('sh init.sh', ' -t lead', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('lead2NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locator1VmName'), ' -u ', parameters('artifactsBaseUrl'))]"
