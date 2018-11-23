@@ -351,12 +351,12 @@
     {  
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('locatorPublicIPName')[copyIndex()]]",
+      "name": "[variables('locatorPublicIPName')[copyIndex(1)]]",
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex()]]"
+          "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex(1)]]"
         }
       },
       "copy": {
@@ -367,12 +367,12 @@
      { 
       "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('leadPublicIPName')[copyIndex()]]", 
+      "name": "[variables('leadPublicIPName')[copyIndex(1)]]", 
       "location": "[parameters('location')]",                          
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[variables('dnsNameForLeadPublicIP')[copyIndex()]]"
+          "domainNameLabel": "[variables('dnsNameForLeadPublicIP')[copyIndex(1)]]"
         }
       },
       "copy": {
@@ -598,11 +598,11 @@
    {
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('locatorNicName')[copyIndex()]]",
+      "name": "[variables('locatorNicName')[copyIndex(1)]]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-		"[concat('Microsoft.Network/publicIPAddresses/', variables('locatorPublicIPName')[copyIndex()])]"
+		"[concat('Microsoft.Network/publicIPAddresses/', variables('locatorPublicIPName')[copyIndex(1)])]"
       ],
 	  "copy": {
         "name": "locatorNicsCopy",
@@ -614,11 +614,11 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex()]]",  
+              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex(1)]]",  
 
 
 			  "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[copyIndex()])]"  
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[copyIndex(1)])]"  
               },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
@@ -632,12 +632,12 @@
     { 
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('locatorVmName')[copyIndex()])]",
+      "name": "[concat(variables('locatorVmName')[copyIndex(1)])]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('locatorAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('locatorStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',variables('locatorNicName')[copyIndex()])]",
+        "[concat('Microsoft.Network/networkInterfaces/',variables('locatorNicName')[copyIndex(1)])]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
      "copy": {
@@ -645,7 +645,7 @@
         "count": "[parameters('locatorNodeCount')]"
       }, 
 	 "tags": {
-        "Name": "[variables('locatorVmName')[copyIndex()]]"
+        "Name": "[variables('locatorVmName')[copyIndex(1)]]"
       },
       "properties": {
         "availabilitySet": {
@@ -655,7 +655,7 @@
           "vmSize": "[parameters('locatorVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('locatorVmName')[copyIndex()]]",
+          "computerName": "[variables('locatorVmName')[copyIndex(1)]]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -670,7 +670,7 @@
           "osDisk": {
             "name": "osdisk",
            "vhd": {
-              "uri": "[concat('http://', variables('locatorStorageAccount'), '.blob.core.windows.net/vhds/',variables('locatorVmName')[copyIndex()], '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('locatorStorageAccount'), '.blob.core.windows.net/vhds/',variables('locatorVmName')[copyIndex(1)], '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -685,7 +685,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex(1)])]",
               "properties": {
                 "primary": true
               }
@@ -699,10 +699,10 @@
   {                
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('LocatorVmName')[copyIndex()], '/init')]",
+      "name": "[concat(variables('LocatorVmName')[copyIndex(1)], '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-         "[concat('Microsoft.Compute/virtualMachines/', variables('LocatorVmName')[copyIndex()])]"
+         "[concat('Microsoft.Compute/virtualMachines/', variables('LocatorVmName')[copyIndex(1)])]"
       ],
 	  "copy": {
         "name": "dataStoreInitExtensionsCopy",
@@ -716,7 +716,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress,' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1],  ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex(1)])).ipConfigurations[0].properties.privateIPAddress,' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex(1)],' -b ', variables('locatorVmName')[1],  ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
 
@@ -747,7 +747,7 @@
             "value": "[parameters('location')]"
         },
           "vmName": {
-            "value": "[variables('locatorVmName')[copyIndex()]"
+            "value": "[variables('locatorVmName')[copyIndex(1)]"
           },
           "extensionSettings": {
             "value": {
@@ -764,11 +764,11 @@
      {             
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('leadNicName')[copyIndex()]]",
+      "name": "[variables('leadNicName')[copyIndex(1)]]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('leadPublicIPName')[copyIndex()])]"
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('leadPublicIPName')[copyIndex(1)])]"
       ],
       "copy": {
         "name": "leadNicsCopy",
@@ -780,9 +780,9 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex()]",
+              "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex(1)]",
               "publicIPAddress": {
-                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[copyIndex()])]"
+                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[copyIndex(1)])]"
               },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
@@ -795,12 +795,12 @@
   {
       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('leadVmName')[copyIndex()]]", 
+      "name": "[variables('leadVmName')[copyIndex(1)]]", 
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',variables('leadNicName')[copyIndex()])]",
+        "[concat('Microsoft.Network/networkInterfaces/',variables('leadNicName')[copyIndex(1)])]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "copy": {
@@ -808,7 +808,7 @@
         "count": "[parameters('leadNodeCount')]"
       },
       "tags": {
-        "Name": "[variables('leadVmName')[copyIndex()]]"
+        "Name": "[variables('leadVmName')[copyIndex(1)]]"
       },
       "properties": {
         "availabilitySet": {
@@ -818,7 +818,7 @@
           "vmSize": "[parameters('leadAndDataStoreVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('leadVmName')[copyIndex()]]",
+          "computerName": "[variables('leadVmName')[copyIndex(1)]]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
@@ -833,7 +833,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/', variables('leadVmName')[copyIndex()], '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('leadStorageAccount'), '.blob.core.windows.net/vhds/', variables('leadVmName')[copyIndex(1)], '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -848,7 +848,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex(1)])]",
               "properties": {
                 "primary": true
               }
@@ -860,10 +860,10 @@
     {
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('leadVmName')[copyIndex()], '/init')]",
+      "name": "[concat(variables('leadVmName')[copyIndex(1)], '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[copyIndex()])]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('leadVmName')[copyIndex(1)])]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[0], '/extensions/init'))]",
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[1], '/extensions/init'))]",
         "dataStoreInitExtensionsCopy",
@@ -877,14 +877,14 @@
           "fileUris": [                                                                                       
           ],
           
-		"commandToExecute": "[concat('sh init.sh', ' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
+		"commandToExecute": "[concat('sh init.sh', ' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex(1)])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex(1)],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
 		}
       }
     },
  {                 
       "apiVersion": "[variables('apiVersions').storage.storageAccounts]",
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('dataStoreStorageAccountArray')[copyIndex()]]",
+      "name": "[variables('dataStoreStorageAccountArray')[copyIndex(1)]]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "dataStoreStorageAccountsCopy",
@@ -965,7 +965,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('dataStoreStorageAccountArray')[mod(copyIndex(),variables('dataStoreStorageAccountCount'))], '.blob.core.windows.net/vhds/', concat(variables('dataStoreVmName'),copyIndex(1)), '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('dataStoreStorageAccountArray')[mod(copyIndex(1),variables('dataStoreStorageAccountCount'))], '.blob.core.windows.net/vhds/', concat(variables('dataStoreVmName'),copyIndex(1)), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
