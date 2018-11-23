@@ -386,7 +386,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex()]]"
+          "domainNameLabel": "[variables('dnsNameForLocatorPublicIP')[copyIndex(1)]]"
         }
       }
      
@@ -399,7 +399,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[variables('dnsNameForLeadPublicIP')[copyIndex()]]"
+          "domainNameLabel": "[variables('dnsNameForLeadPublicIP')[copyIndex(1)]]"
         }
       },
       "copy": {
@@ -641,7 +641,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex()]]",  
+              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex(1)]]",  
 
 
 			  "publicIPAddress": {
@@ -724,10 +724,10 @@
 {                
       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('LocatorVmName')[copyIndex()], '/init')]",
+      "name": "[concat(concat(variables('LocatorVmName'),copyIndex(1)), '/init')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-         "[concat('Microsoft.Compute/virtualMachines/', variables('LocatorVmName')[copyIndex()])]"
+         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('LocatorVmName'),copyIndex(1)))]"
       ],
        "copy": {
         "name": "locatorInitExtensionsCopy",
@@ -741,7 +741,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat(	'sh init.sh', ' -t locator', '-i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('locatorNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()], '- b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat(	'sh init.sh', ' -t locator', '-i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', variables('locatorVmName')[copyIndex()], '- b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
         }
       }
 
@@ -766,7 +766,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex()]",
+              "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex(1)]",
               "publicIPAddress": {
                  "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))]"
               },
@@ -875,7 +875,7 @@
  {                 
       "apiVersion": "[variables('apiVersions').storage.storageAccounts]",
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('dataStoreStorageAccountArray')[copyIndex()]]",
+      "name": "[variables('dataStoreStorageAccountArray')[copyIndex(1)]]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "dataStoreStorageAccountsCopy",
@@ -956,7 +956,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('dataStoreStorageAccountArray')[mod(copyIndex(),variables('dataStoreStorageAccountCount'))], '.blob.core.windows.net/vhds/', concat(variables('dataStoreVmName'),copyIndex(1)), '-osdisk.vhd')]"
+              "uri": "[concat('http://', variables('dataStoreStorageAccountArray')[mod(copyIndex(1),variables('dataStoreStorageAccountCount'))], '.blob.core.windows.net/vhds/', concat(variables('dataStoreVmName'),copyIndex(1)), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
