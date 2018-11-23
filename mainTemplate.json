@@ -986,17 +986,6 @@
     }
   ],
 
- "outputs": {
-    "locatorPublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName'))).dnsSettings.fqdn)]"
-    },
-   
-    "leadPublicIP": {
-      "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName'))).dnsSettings.fqdn)]"
-    }
-   
-  }
+
 }
 
