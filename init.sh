@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:a:u:" opt; do
+while getopts "t:i:s:c:a:B:u:" opt; do
 	log "Option $opt set with value (${OPTARG})"
 	case "$opt" in
 		t)	NODETYPE=$OPTARG
@@ -26,6 +26,8 @@ while getopts "t:i:s:c:a:u:" opt; do
 		c)	DATASTORENODECOUNT=$OPTARG
 		;;
 		a)	LOCATOR1HOSTNAME=$OPTARG
+		;;
+		b)      LOCATOR2HOSTNAME=$OPTARG
 		;;
 		u)	BASEURL=$OPTARG
 		;;
@@ -127,15 +129,15 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy server start -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy leader start -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
