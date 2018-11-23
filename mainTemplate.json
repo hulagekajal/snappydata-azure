@@ -989,12 +989,12 @@
  "outputs": {
     "locator1PublicIP": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName'))).dnsSettings.fqdn)]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))).dnsSettings.fqdn)]"
     },
    
     "lead1PublicIP": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName'))).dnsSettings.fqdn)]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))).dnsSettings.fqdn)]"
     }
    
   }
