@@ -868,7 +868,7 @@
           "fileUris": [                                                                                       
           ],
           
-		"commandToExecute": "[concat('sh init.sh',' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',variables('leadNicName')[copyIndex()])).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
+		"commandToExecute": "[concat('sh init.sh',' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('leadNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', variables('locatorVmName')[copyIndex()],' -b ', variables('locatorVmName')[1], ' -u ', parameters('artifactsBaseUrl'))]"
 		}
       }
     },
