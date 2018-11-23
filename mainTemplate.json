@@ -850,8 +850,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', concat(variables('leadVmName'),copyIndex(1)))]",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[0], '/extensions/init'))]",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('locatorVmName')[1], '/extensions/init'))]",
+         "locatorVmsCopy",
         "dataStoreInitExtensionsCopy",
         "[concat('Microsoft.Compute/virtualMachines/', concat(concat(variables('leadVmName'),copyIndex(1)), '/extensions/init'))]"
       ],
