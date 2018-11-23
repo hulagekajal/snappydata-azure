@@ -19,7 +19,7 @@
     },
     "clusterName": {
       "type": "string",
-      "defaultValue": "snappy",
+      "defaultValue": "sn",
       "minLength": "2",
       "maxLength": "10",
       "metadata": {
