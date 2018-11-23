@@ -987,12 +987,12 @@
   ],
 
  "outputs": {
-    "locator1PublicIP": {
+    "locatorPublicIP": {
       "type": "string",
       "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))).dnsSettings.fqdn)]"
     },
    
-    "lead1PublicIP": {
+    "leadPublicIP": {
       "type": "string",
       "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))).dnsSettings.fqdn)]"
     }
