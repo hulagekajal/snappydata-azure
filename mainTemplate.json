@@ -235,7 +235,7 @@
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
     "locatorPublicIPName": "[concat(parameters('clusterName'),'-locator-publicip-')]",
-    "leadPublicIPName":"[concat(parameters('clusterName'),'-lead-publicip-1')]",	
+    "leadPublicIPName":"[concat(parameters('clusterName'),'-lead-publicip-')]",	
 	
 	"locatorPublicIPNameNew": { 
      "type": "array", 
@@ -289,9 +289,9 @@
       ] 
   	},	
 "locatorVmName":"[concat(parameters('clusterName'),'-locator-')]",
-"locatorNicName":"[concat(parameters('clusterName'),'-locator-nic-')]",
+"locatorNicName":"[concat(parameters('clusterName'),'-locator-nic')]",
 "leadVmName":"[concat(parameters('clusterName'),'-lead-')]",
-"leadNicName":"[concat(parameters('clusterName'),'-lead-nic-')]",        
+"leadNicName":"[concat(parameters('clusterName'),'-lead-nic')]",        
 	
 	"locatorVmNameNew": { 
      "type": "array", 
