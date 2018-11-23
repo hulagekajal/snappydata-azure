@@ -234,8 +234,8 @@
     "locatorAndServerSecurityRules": "[concat(parameters('clusterName'),'-locAndServ-rules')]",
     "diagnosticsStorageAccount": "[concat('d',uniqueString(resourceGroup().id,'d'),parameters('clusterName'))]",
 
-    "locatorPublicIPName": "[concat(parameters('clusterName'),'-locator-publicip-')]",
-    "leadPublicIPName":"[concat(parameters('clusterName'),'-lead-publicip-')]",	
+    "locatorPublicIPName": "[concat(parameters('clusterName'),'-locator-publicip')]",
+    "leadPublicIPName":"[concat(parameters('clusterName'),'-lead-publicip')]",	
 	
 	"locatorPublicIPNameNew": { 
      "type": "array", 
@@ -288,9 +288,9 @@
         "10.0.1.7"
       ] 
   	},	
-"locatorVmName":"[concat(parameters('clusterName'),'-locator-')]",
+"locatorVmName":"[concat(parameters('clusterName'),'-locator')]",
 "locatorNicName":"[concat(parameters('clusterName'),'-locator-nic')]",
-"leadVmName":"[concat(parameters('clusterName'),'-lead-')]",
+"leadVmName":"[concat(parameters('clusterName'),'-lead')]",
 "leadNicName":"[concat(parameters('clusterName'),'-lead-nic')]",        
 	
 	"locatorVmNameNew": { 
@@ -629,7 +629,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-		"[concat('Microsoft.Network/publicIPAddresses/', variables('locatorPublicIPName')[copyIndex()])]"
+		"[concat('Microsoft.Network/publicIPAddresses/', conat(variables('locatorPublicIPName'),copyIndex(1)))]"
       ],
 	  "copy": {
         "name": "locatorNicsCopy",
@@ -645,7 +645,7 @@
 
 
 			  "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('locatorPublicIPName')[copyIndex()])]"  
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))]"  
               },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
@@ -754,7 +754,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('leadPublicIPName')[copyIndex()])]"
+        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]"
       ],
       "copy": {
         "name": "leadNicsCopy",
@@ -768,7 +768,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex()]",
               "publicIPAddress": {
-                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('leadPublicIPName')[copyIndex()])]"
+                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))]"
               },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
