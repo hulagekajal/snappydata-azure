@@ -171,28 +171,8 @@
         "metadata": {
           "description": "The IP address range that can be used to SSH to the instances"
       }
-    },
-    "confForLead": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Provide conf paramters for lead"
-      }
-    },
-     "confForLocator": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Provide conf paramters for locator"
-      }
-    },
-    "confForDataStore": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Provide conf paramters for DataStore"
-      }
     }
+   
   },
 "variables": {
     "apiVersions": {
