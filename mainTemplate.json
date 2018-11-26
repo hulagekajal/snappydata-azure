@@ -666,7 +666,7 @@
       "name": "start_snappydata",
       "dependsOn": [
         "locatorInitExtensionsCopy",
-        "leadIntitExtensionsCopy",
+        "leadInitExtensionsCopy",
         "dataStoreInitExtensionsCopy"
       ],
       "properties": {
