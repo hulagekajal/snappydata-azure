@@ -4,13 +4,13 @@
   "parameters": {
     "artifactsBaseUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/hulagekajal/snappydata-azure/master",
+      "defaultValue": "https://raw.githubusercontent.com/hulagekajal/snappydata-azure/master",
       "metadata": {
         "description": "Base URL for artifacts such as nested templates and scripts",
         "artifactsBaseUrl": ""
       }
     },
-	"location": {
+      "location": {
       "type": "string",
       "defaultValue": "eastasia",
       "metadata": {
@@ -97,7 +97,7 @@
         "description": "VM size"
       }
     },
-	"locatorNodeCount": {
+  "locatorNodeCount": {
       "type": "int",
       "defaultValue": 1,
       "allowedValues": [ 1, 2 ],
@@ -195,7 +195,7 @@
         "virtualMachineExtensions": "2016-03-30"
       }
     },
-	"baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
+    "baseUrl": "[concat(parameters('artifactsBaseUrl'),'/')]",
     "templateUrlStartSnappyData": "[concat(variables('baseUrl'),'startSnappyData.json')]",
     "scriptUrlInit": "[concat(variables('baseUrl'),'init.sh')]",
     "scriptUrlStartSnappyData": "[concat(variables('baseUrl'),'start_snappydata.sh')]",
@@ -557,9 +557,7 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex(1)]]",  
-
-
-			  "publicIPAddress": {
+              "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))]"  
               },
               "subnet": {
@@ -586,7 +584,7 @@
         "count": "[parameters('locatorNodeCount')]"
       }, 
 	 "tags": {
-      "Name": "[concat(variables('locatorVmName'),copyIndex(1))]",
+         "Name": "[concat(variables('locatorVmName'),copyIndex(1))]"
       },
       "properties": {
         "availabilitySet": {
@@ -802,7 +800,7 @@
       "dependsOn": [
         "locatorVmsCopy",
         "dataStoreInitExtensionsCopy",
-	    "leadVmsCopy",
+	"leadVmsCopy"
         ],
 	"copy": {
         "name": "leadInitExtensionsCopy",
@@ -936,7 +934,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "dataStoreVmsCopy",
-        "locatorVmsCopy",
+        "locatorVmsCopy"
       ],
       "copy": {
         "name": "dataStoreInitExtensionsCopy",
@@ -954,7 +952,7 @@
         }
       }
     }
-  ],
+  ]
 
 
 }
