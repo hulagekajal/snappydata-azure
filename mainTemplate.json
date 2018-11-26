@@ -19,7 +19,7 @@
     },
     "clusterName": {
       "type": "string",
-      "defaultValue": "sn",
+      "defaultValue": "sd",
       "minLength": "2",
       "maxLength": "10",
       "metadata": {
