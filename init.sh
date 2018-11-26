@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:a:b:u:" opt; do
+while getopts "t:i:s:c:a:u:" opt; do
 	log "Option $opt set with value (${OPTARG})"
 	case "$opt" in
 		t)	NODETYPE=$OPTARG
@@ -26,8 +26,6 @@ while getopts "t:i:s:c:a:b:u:" opt; do
 		c)	DATASTORENODECOUNT=$OPTARG
 		;;
 		a)	LOCATOR1HOSTNAME=$OPTARG
-		;;
-		b)	LOCATOR2HOSTNAME=$OPTARG
 		;;
 		u)	BASEURL=$OPTARG
 		;;
@@ -96,10 +94,9 @@ create_internal_ip_file()
 	for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
 	do
 		octet1=${startaddress_parts[0]}
-		octet2=${startaddress_parts[1]}
-		octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
+                octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
 		octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
-		ip=$octet1"."$octet2"."$octet3"."$octet4
+		ip=$octet1"."$octet3"."$octet4
 		echo $ip
 	done > ${INTERNAL_IP_FILE}
 }
@@ -129,15 +126,15 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
+	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
