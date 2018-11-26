@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -a LOCATOR1HOSTNAME  -u BASEURL
-# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -a kl-locator1  -u https://github.com/hulagekajal/snappydata-azure/master
+# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -a LOCATOR1HOSTNAME -b LOCATOR2HOSTNAME -u BASEURL
+# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -a av-locator1 -b av-locator2 -u https://raw.githubusercontent.com/arsenvlad/snappydata-azure/master
 
 log()
 {
@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:a:u:" opt; do
+while getopts "t:i:s:c:a:b:u:" opt; do
 	log "Option $opt set with value (${OPTARG})"
 	case "$opt" in
 		t)	NODETYPE=$OPTARG
@@ -26,6 +26,8 @@ while getopts "t:i:s:c:a:u:" opt; do
 		c)	DATASTORENODECOUNT=$OPTARG
 		;;
 		a)	LOCATOR1HOSTNAME=$OPTARG
+		;;
+		b)	LOCATOR2HOSTNAME=$OPTARG
 		;;
 		u)	BASEURL=$OPTARG
 		;;
@@ -89,9 +91,9 @@ log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADD
 # Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
 create_internal_ip_file()
 {
-	# Generate IP addresses of the nodes based on the convention of locator1, leader1,  data stores
+	# Generate IP addresses of the nodes based on the convention of locator1, locator2, leader1, leader2, data stores
 	IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
-	for (( c=0; c<2+$DATASTORENODECOUNT; c++ ))
+	for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
 	do
 		octet1=${startaddress_parts[0]}
 		octet2=${startaddress_parts[1]}
@@ -111,10 +113,10 @@ yum install -y java-1.8.0-openjdk
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
-wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2/snappydata-1.0.2-bin.tar.gz
+wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v0.5/snappydata-0.5-bin.tar.gz
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
-tar -xzf snappydata-1.0.2-bin.tar.gz  --directory ${DIR} --strip 1
+tar -zxvf snappydata-0.5-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
@@ -127,15 +129,15 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy server start -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy leader start -locators=${LOCATOR1HOSTNAME}:10334
+	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
