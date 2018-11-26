@@ -251,7 +251,7 @@
     "dataStoreAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-datastore')]",
       "faultDomainCount": "3",
-      "updateDomainCount": "10"
+      "updateDomainCount": "20"
     },
 	
     "locatorStorageAccount": "[concat('locator',uniqueString(resourceGroup().id,'locator'),parameters('clusterName'))]",
