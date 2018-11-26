@@ -683,14 +683,19 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "sd-locator1"
+            "value": "[concat(variables('locatorVmName'),copyIndex(1))]"
+          },
+          "copy": {
+            "name":"deploymentlocnic",
+            "count":1
+
           },
           "extensionSettings": {
             "value": {
               "fileUris": [
                 "[variables('scriptUrlStartSnappyData')]"
               ],
-              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', variables('locator1NicName'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('locator1NicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
             }
           }
         }

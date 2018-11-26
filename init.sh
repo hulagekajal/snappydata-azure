@@ -25,7 +25,7 @@ while getopts "t:i:s:c:a:u:" opt; do
 		;;
 		c)	DATASTORENODECOUNT=$OPTARG
 		;;
-		a)	LOCATOR1HOSTNAME=$OPTARG
+		a)	LOCATORHOSTNAME=$OPTARG
 		;;
 		u)	BASEURL=$OPTARG
 		;;
