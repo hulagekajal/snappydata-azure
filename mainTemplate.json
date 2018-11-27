@@ -716,7 +716,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "variables('leadPrivateIPAddress')[copyIndex(1)]",
+              "privateIPAddress": "[variables('leadPrivateIPAddress')[copyIndex()]]",
               "publicIPAddress": {
                  "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))]"
               },
