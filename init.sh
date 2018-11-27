@@ -5,8 +5,8 @@
 
 log()
 {
-	echo "$1"
-	logger "$1"
+    echo "$1"
+    logger "$1"
 }
 
 # Initialize local variables
@@ -15,22 +15,22 @@ NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
 while getopts "t:i:s:c:a:u:" opt; do
-	log "Option $opt set with value (${OPTARG})"
-	case "$opt" in
-		t)	NODETYPE=$OPTARG
-		;;
-		i)	LOCALIP=$OPTARG
-		;;
-		s)	STARTADDRESS=$OPTARG
-		;;
-		c)	DATASTORENODECOUNT=$OPTARG
-		;;
-		a)	LOCATORHOSTNAME=$OPTARG
-		;;
-		u)	BASEURL=$OPTARG
-		;;
-	esac
-done
+    log "Option $opt set with value (${OPTARG})"
+    case "$opt" in
+        t) NODETYPE=$OPTARG
+        ;;
+        i) LOCALIP=$OPTARG
+        ;;
+        s) STARTADDRESS=$OPTARG
+        ;;
+        c) DATASTORENODECOUNT=$OPTARG
+        ;;
+        a) LOCATORHOSTNAME=$OPTARG
+        ;;
+        u) BASEURL=$OPTARG
+        ;;
+    esac
+    done
 
 fatal() {
     msg=${1:-"Unknown Error"}
@@ -51,7 +51,7 @@ retry() {
         if (( attempt_num == max_attempts ))
         then
             log "Command $cmd attempt $attempt_num failed and there are no more attempts left!"
-			return 1
+        return 1
         else
             log "Command $cmd attempt $attempt_num failed. Trying again in 5 + $attempt_num seconds..."
             sleep $(( 5 + attempt_num++ ))
@@ -89,16 +89,17 @@ log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADD
 # Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
 create_internal_ip_file()
 {
-	# Generate IP addresses of the nodes based on the convention of locator1, locator2, leader1, leader2, data stores
-	IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
-	for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
-	do
-		octet1=${startaddress_parts[0]}
-                octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
-		octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
-		ip=$octet1"."$octet3"."$octet4
-		echo $ip
-	done > ${INTERNAL_IP_FILE}
+    # Generate IP addresses of the nodes based on the convention of locator1, leader1, data stores
+    IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
+    for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
+    do
+        octet1=${startaddress_parts[0]}
+        octet2=${startaddress_parts[1]}
+        octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
+        octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
+        ip=$octet1"."$octet2"."$octet3"."$octet4
+        echo $ip
+    done > ${INTERNAL_IP_FILE}
 }
 
 # ============================================================================================================
@@ -110,10 +111,10 @@ yum install -y java-1.8.0-openjdk
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
-wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v0.5/snappydata-0.5-bin.tar.gz
+wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
-tar -zxvf snappydata-0.5-bin.tar.gz --directory ${DIR} --strip 1
+tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
@@ -126,15 +127,15 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy-shell locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname`
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy-shell server start -locators=${LOCATOR1HOSTNAME}:10334
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy-shell leader start -locators=${LOCATOR1HOSTNAME}:10334
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334
 fi
 
 # ---------------------------------------------------------------------------------------------
