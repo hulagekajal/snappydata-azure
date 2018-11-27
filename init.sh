@@ -25,9 +25,11 @@ while getopts "t:i:s:c:a:u:" opt; do
         ;;
         c) DATASTORENODECOUNT=$OPTARG
         ;;
-        a) LOCATORHOSTNAME=$OPTARG
+        l) LOCATORHOSTNAME=$OPTARG
         ;;
         u) BASEURL=$OPTARG
+        ;;
+        a) ADMINUSER=$OPTARG
         ;;
     esac
     done
@@ -77,11 +79,19 @@ if [[ -z ${STARTADDRESS} ]]; then
 fi
 
 if [[ -z ${DATASTORENODECOUNT} ]]; then
-    fatal "No segments count -c specified, can't proceed."
+    fatal "No datastore count -c specified, can't proceed."
+fi
+
+if [[ -z ${LOCATORHOSTNAME} ]]; then
+    fatal "No locator hostname -l specified, can't proceed."
 fi
 
 if [[ -z ${BASEURL} ]]; then
     fatal "No base URL -u specified, can't proceed."
+fi
+
+if [[ -z ${ADMINUSER} ]]; then
+    fatal "No admin username -a specified, can't proceed."
 fi
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL"
@@ -127,15 +137,21 @@ cd ${DIR}
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 
 if [ "$NODETYPE" == "locator" ]; then
-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname`
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/locator
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -dir=/opt/snappydata/work/locator
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/datastore
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/lead
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead
 fi
 
 # ---------------------------------------------------------------------------------------------

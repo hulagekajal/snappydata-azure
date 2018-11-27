@@ -33,7 +33,7 @@
         "description": "Globally unique DNS name"
       }
     },
-    "adminUserName": {
+    "adminUsername": {
       "type": "string",
       "defaultValue": "azureuser",
       "metadata": {
@@ -389,7 +389,7 @@
               "direction": "Inbound"
             }
           },
-		  {
+          {
             "name": "dash_board",
             "properties": {
               "description": "Allow HTTP access",
@@ -403,8 +403,7 @@
               "direction": "Inbound"
             }
           },
-		
-		 {
+          {
             "name": "JobServer_UI",
             "properties": {
               "description": "Allow HTTP access",
@@ -418,7 +417,7 @@
               "direction": "Inbound"
             }
           },
-		 {
+          {
             "name": "snappy_rule",
             "properties": {
               "description": "Allow HTTP access",
@@ -436,8 +435,8 @@
       }
     },
 
-	{       
-	  "apiVersion": "[variables('apiVersions').network.virtualNetworks]",
+    {
+      "apiVersion": "[variables('apiVersions').network.virtualNetworks]",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[parameters('location')]",
@@ -647,7 +646,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ', concat(variables('locatorVmName'),copyIndex(1)), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),copyIndex(1)), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'))]"
         }
       }
 
@@ -813,7 +812,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh',' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('leadNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -a ', concat(variables('locatorVmName'),copyIndex(1)), ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh',' -t locator',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('leadNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'),' -c ', parameters('dataStoreNodeCount'),' -l ', concat(variables('locatorVmName'),copyIndex(1)), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'))]"
         }
       }
     },
@@ -946,7 +945,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -a ',concat(variables('locatorVmName'),copyIndex(1)),  ' -u ', parameters('artifactsBaseUrl'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),copyIndex(1)),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'))]"
         }
       }
     }
