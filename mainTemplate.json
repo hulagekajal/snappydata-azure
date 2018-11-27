@@ -220,23 +220,19 @@
     "leadVmName":"[concat(parameters('clusterName'),'-lead')]",
     "locatorNicName":"[concat(parameters('clusterName'),'-locator-nic')]",
     "leadNicName":"[concat(parameters('clusterName'),'-lead-nic')]",        
-	"dnsNameForLocatorPublicIP":"[concat(parameters('dnsNamePrefix'),'-locator-',uniqueString(resourceGroup().id))]",   
-	"dnsNameForLeadPublicIP":"[concat(parameters('dnsNamePrefix'),'-lead-',uniqueString(resourceGroup().id))]", 
+    "dnsNameForLocatorPublicIP":"[concat(parameters('dnsNamePrefix'),'-locator-',uniqueString(resourceGroup().id))]",   
+    "dnsNameForLeadPublicIP":"[concat(parameters('dnsNamePrefix'),'-lead-',uniqueString(resourceGroup().id))]", 
 
-	"locatorPrivateIPAddress": { 
-     "type": "array", 
-     "defaultValue": [ 
+    "locatorPrivateIPAddress": [   
         "10.0.1.4",
         "10.0.1.5"
-      ] 
-  	},
-  	"leadPrivateIPAddress": { 
-     "type": "array", 
-     "defaultValue": [ 
+      ], 
+      
+    "leadPrivateIPAddress": [ 
         "10.0.1.6",
         "10.0.1.7"
-      ] 
-  	},	
+      ], 
+  	
     
     "locatorAvailabilitySetSettings": {
       "name": "[concat(parameters('clusterName'),'-as-locator')]",
@@ -752,12 +748,12 @@
       },
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leadAvailabilitySetSettings').name)]"
-        },
-        "hardwareProfile": {
-          "vmSize": "[parameters('leadAndDataStoreVmSize')]"
-        },
-        "osProfile": {
+               "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('leadAvailabilitySetSettings').name)]"
+      },
+      "hardwareProfile": {
+               "vmSize": "[parameters('leadAndDataStoreVmSize')]"
+      },
+      "osProfile": {
           "computerName": "[concat(variables('leadVmName'),copyIndex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
