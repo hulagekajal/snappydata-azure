@@ -19,7 +19,7 @@
     },
     "clusterName": {
       "type": "string",
-      "defaultValue": "kh",
+      "defaultValue": "aa",
       "minLength": "2",
       "maxLength": "10",
       "metadata": {
@@ -678,7 +678,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "[concat(parameters('clusterName'), '-locator1')]"
+            "value": "aa-locator1"
           },
           "copy": {
             "name":"deploymentlocnic",
@@ -690,7 +690,7 @@
               "fileUris": [
                 "[variables('scriptUrlStartSnappyData')]"
               ],
-              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(parameters('clusterName'), '-locator-nic1'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces','aa-locator-nic1')).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
             }
           }
         }
