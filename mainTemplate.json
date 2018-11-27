@@ -296,7 +296,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[concat(variables('dnsNameForLocatorPublicIP'),copyIndex(1))]"
+          "domainNameLabel": "[concat(variables('dnsNameForLocatorPublicIP'),copyIndex())]"
         }
       }
      
@@ -309,7 +309,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[concat(variables('dnsNameForLeadPublicIP'),copyIndex(1))]"
+          "domainNameLabel": "[concat(variables('dnsNameForLeadPublicIP'),copyIndex())]"
         }
       },
       "copy": {
