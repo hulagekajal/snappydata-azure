@@ -679,7 +679,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "lk-locator1"
+            "value": "kh-locator1"
           },
           "copy": {
             "name":"deploymentlocnic",
@@ -691,7 +691,7 @@
               "fileUris": [
                 "[variables('scriptUrlStartSnappyData')]"
               ],
-              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces','lk-locator-nic1')).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
+              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces','kh-locator-nic1')).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
             }
           }
         }
