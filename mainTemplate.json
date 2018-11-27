@@ -19,7 +19,7 @@
     },
     "clusterName": {
       "type": "string",
-      "defaultValue": "lk",
+      "defaultValue": "kh",
       "minLength": "2",
       "maxLength": "10",
       "metadata": {
