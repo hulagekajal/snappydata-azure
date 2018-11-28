@@ -263,7 +263,7 @@
       "[concat(uniqueString(resourceGroup().id,'5'),parameters('clusterName'),'5')]"
      ],
     "dataStorePublicIPName": "[concat(parameters('clusterName'),'-dataStore-publicip')]",
-    "dnsNameForDataStorePublicIP":"[concat(parameters('dnsNamePrefix'),'-dataStore-',uniqueString(resourceGroup().id))]",
+    "dnsNameForDataStorePublicIP":"[concat(parameters('dnsNamePrefix'),'-datastore-',uniqueString(resourceGroup().id))]",
     "dataStoreStorageAccountCount": "[add(div(parameters('dataStoreNodeCount'),4),1)]",
     "dataStoreStorageAccountType": "Standard_LRS",
     "dataStoreNicName": "[concat(parameters('clusterName'),'-datastore-nic')]",
