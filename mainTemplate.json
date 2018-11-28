@@ -262,6 +262,8 @@
       "[concat(uniqueString(resourceGroup().id,'4'),parameters('clusterName'),'4')]",
       "[concat(uniqueString(resourceGroup().id,'5'),parameters('clusterName'),'5')]"
      ],
+    "dataStorePublicIPName": "[concat(parameters('clusterName'),'-dataStore-publicip')]",
+    "dnsNameForDataStorePublicIP":"[concat(parameters('dnsNamePrefix'),'-dataStore-',uniqueString(resourceGroup().id))]",
     "dataStoreStorageAccountCount": "[add(div(parameters('dataStoreNodeCount'),4),1)]",
     "dataStoreStorageAccountType": "Standard_LRS",
     "dataStoreNicName": "[concat(parameters('clusterName'),'-datastore-nic')]",
@@ -314,6 +316,22 @@
       "copy": {
         "name": "leadPublicIPCopy",
         "count": "[parameters('leadNodeCount')]"
+      }
+    },
+    {  
+      "apiVersion": "[variables('apiVersions').network.publicIPAddresses]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('dataStorePublicIPName'),copyIndex(1))]",
+       "copy": {
+        "name": "dataStorePublicIPCopy",
+        "count": "[parameters('dataStoreNodeCount')]"
+      },
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(variables('dnsNameForDataStorePublicIP'),copyIndex())]"
+        }
       }
     },
     {
@@ -839,6 +857,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]"
       ],
       "copy": {
         "name": "dataStoreNicsCopy",
@@ -851,6 +870,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('subnetDataIPAddressParts')[0],'.',variables('subnetDataIPAddressParts')[1],'.',variables('subnetDataIPAddressParts')[2],'.', string(add(int(variables('subnetDataIPAddressParts')[3]), copyIndex(4))))]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('dataStorePublicIPName'),copyIndex(1)))]"  
+              },
               "subnet": {
                 "id": "[variables('subnetDataID')]"
               }
