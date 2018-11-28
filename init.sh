@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:a:u:" opt; do
+while getopts "t:i:s:c:l:u:a:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
