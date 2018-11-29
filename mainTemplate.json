@@ -368,7 +368,7 @@
             }
           },
 		 {  
-            "name": "snappy_rule",
+            "name": "snap_rule",
             "properties": {
               "description": "Allow HTTP access",
               "protocol": "Tcp",
@@ -436,7 +436,7 @@
       "properties": {
         "securityRules": [
           {
-            "name": "ssh_rule",
+            "name": "ssh_rulelead",
             "properties": {
               "description": "Allow SSH access",
               "protocol": "Tcp",
@@ -446,20 +446,6 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 102,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "dash_board",
-            "properties": {
-              "description": "Allow HTTP access",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "5050",
-              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 107,
               "direction": "Inbound"
             }
           }
