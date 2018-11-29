@@ -380,6 +380,48 @@
               "priority": 101,
               "direction": "Inbound"
             }
+          },
+	 {
+            "name": "dash_board",
+            "properties": {
+              "description": "Allow HTTP access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5050",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "JobServer_UI",
+            "properties": {
+              "description": "Allow HTTP access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8090",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "snappy_rule",
+            "properties": {
+              "description": "Allow HTTP access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3768",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Inbound"
+            }
           }
 
         ]
