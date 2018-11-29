@@ -695,11 +695,6 @@
           "vmName": {
             "value": "[concat(parameters('clusterName'), '-locator1')]"
           },
-          "copy": {
-            "name":"deploymentlocnic",
-            "count":1
-
-          },
           "extensionSettings": {
             "value": {
               "fileUris": [
