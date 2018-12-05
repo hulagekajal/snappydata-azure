@@ -4,7 +4,7 @@
   "parameters": {
     "artifactsBaseUrl": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/hulagekajal/snappydata-azure/shouldwork",
+      "defaultValue": "https://raw.githubusercontent.com/hulagekajal/snappydata-azure/script-improvments-1",
       "metadata": {
         "description": "Base URL for artifacts such as nested templates and scripts",
         "artifactsBaseUrl": ""
@@ -105,7 +105,7 @@
         "description": "The number of virtual machines instances to provision for the locator nodes"
       }
     },
-  "leadAndDataStoreVmSize":{
+	"leadAndDataStoreVmSize":{
       "type": "string",
       "defaultValue": "Standard_D3",
       "allowedValues": [
@@ -389,7 +389,7 @@
             }
           },
 		 {  
-            "name": "snappy_rule",
+            "name": "snap_rule",
             "properties": {
               "description": "Allow HTTP access",
               "protocol": "Tcp",
@@ -401,34 +401,8 @@
               "priority": 101,
               "direction": "Inbound"
             }
-          }
-
-        ]
-      }
-    },
-
-    {                       
-      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('leadSecurityRules')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "ssh_rule",
-            "properties": {
-              "description": "Allow SSH access",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Inbound"
-            }
           },
-          {
+	 {
             "name": "dash_board",
             "properties": {
               "description": "Allow HTTP access",
@@ -467,6 +441,32 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 105,
+              "direction": "Inbound"
+            }
+          }
+
+        ]
+      }
+    },
+
+    {                       
+      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('leadSecurityRules')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ssh_rulelead",
+            "properties": {
+              "description": "Allow SSH access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
               "direction": "Inbound"
             }
           }
@@ -691,47 +691,6 @@
 
     },
 
-    {
-      "apiVersion": "[variables('apiVersions').resources.deployments]",
-      "type": "Microsoft.Resources/deployments",
-      "name": "start_snappydata",
-      "dependsOn": [
-        "locatorInitExtensionsCopy",
-        "leadInitExtensionsCopy",
-        "dataStoreInitExtensionsCopy"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('templateUrlStartSnappyData')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "apiVersions": {
-            "value": "[variables('apiVersions')]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "vmName": {
-            "value": "[concat(parameters('clusterName'), '-locator1')]"
-          },
-          "copy": {
-            "name":"deploymentlocnic",
-            "count":1
-
-          },
-          "extensionSettings": {
-            "value": {
-              "fileUris": [
-                "[variables('scriptUrlStartSnappyData')]"
-              ],
-              "commandToExecute": "[concat('sh start_snappydata.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(parameters('clusterName'), '-locator-nic1'))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -u ', parameters('artifactsBaseUrl'))]"
-            }
-          }
-        }
-      }
-    },
     {             
       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -988,7 +947,7 @@
           "fileUris": [
             "[variables('scriptUrlInit')]"
           ],
-        "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),copyIndex(1)),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -f ', parameters('confForDataStore'))]"
+          "commandToExecute": "[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),copyIndex(1)),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -f ', parameters('confForDataStore'))]"
         }
       }
     }
