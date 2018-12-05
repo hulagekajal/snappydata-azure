@@ -367,7 +367,7 @@
               "direction": "Inbound"
             }
           },
-		 {  
+	  {  
             "name": "snap_rule",
             "properties": {
               "description": "Allow HTTP access",
@@ -380,7 +380,7 @@
               "priority": 101,
               "direction": "Inbound"
             }
-          },
+         },
 	 {
             "name": "dash_board",
             "properties": {
