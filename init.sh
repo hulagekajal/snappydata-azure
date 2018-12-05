@@ -141,19 +141,19 @@ cd ${DIR}
 if [ "$NODETYPE" == "locator" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/locator
-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334,${CONFPARAMETERS} -dir=/opt/snappydata/work/locator
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334 -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/datastore
-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334,${CONFPARAMETERS} -dir=/opt/snappydata/work/datastore
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/lead
-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334,${CONFPARAMETERS} -dir=/opt/snappydata/work/lead
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
 fi
 
 # ---------------------------------------------------------------------------------------------
