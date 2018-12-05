@@ -224,7 +224,7 @@
     "dnsNameForLeadPublicIP":"[concat(parameters('dnsNamePrefix'),'-lead-',uniqueString(resourceGroup().id))]", 
 
     "locatorPrivateIPAddress": [   
-        "10.0.1.4",
+        "10.0.1.8",
         "10.0.1.5"
       ], 
 
@@ -566,7 +566,7 @@
             "name": "ip1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex(1)]]",  
+              "privateIPAddress": "[variables('locatorPrivateIPAddress')[copyIndex()]]",  
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))]"  
               },
