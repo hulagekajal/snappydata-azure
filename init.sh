@@ -154,7 +154,7 @@ if [ "$LOCATORNODECOUNT" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ echo $? == 0 ]; then
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-  elif
+  else
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
   fi
 fi
