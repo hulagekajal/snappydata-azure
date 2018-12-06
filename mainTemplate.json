@@ -195,7 +195,7 @@
     }
    
   },
-"variables": {
+  "variables": {
     "apiVersions": {
       "resources": {
         "deployments": "2016-02-01"
