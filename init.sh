@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:l:u:a:n:" opt; do
+while getopts "t:i:s:c:l:u:a:n:k:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -32,6 +32,8 @@ while getopts "t:i:s:c:l:u:a:n:" opt; do
         a) ADMINUSER=$OPTARG
         ;;
         n) LOCATORNODECOUNT=$OPTARG
+        ;;
+        k) CLUSTERNAME=$OPTARG
         ;;
     esac
     done
@@ -142,7 +144,7 @@ cd ${DIR}
 # wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
-LOCATOR2HOSTNAME="ap-locator2"
+LOCATOR2HOSTNAME="$CLUSTERNAME-locator2"
 
 if [ "$NODETYPE" == "locator" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
