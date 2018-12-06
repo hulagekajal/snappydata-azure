@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:l:u:a:" opt; do
+while getopts "t:i:s:c:l:u:a:n:f:k:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -31,6 +31,13 @@ while getopts "t:i:s:c:l:u:a:" opt; do
         ;;
         a) ADMINUSER=$OPTARG
         ;;
+        n) LOCATORNODECOUNT=$OPTARG
+        ;;
+	f) CONFPARAMETERS=$OPTARG
+        ;;
+	k) CLUSTERNAME=$OPTARG
+        ;;
+
     esac
     done
 
@@ -94,7 +101,12 @@ if [[ -z ${ADMINUSER} ]]; then
     fatal "No admin username -a specified, can't proceed."
 fi
 
-log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL"
+if [[ -z ${LOCATORNODECOUNT} ]]; then
+    fatal "No locator count -n specified, can't proceed."
+fi
+
+
+log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
 # Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
 create_internal_ip_file()
@@ -135,24 +147,43 @@ cd ${DIR}
 # wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
+LOCATOR2HOSTNAME="${CLUSTERNAME}-locator2"
 
 if [ "$NODETYPE" == "locator" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/locator
-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -dir=/opt/snappydata/work/locator
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
 fi
+
+if [ "$NODETYPE" == "locator" && "$LOCATORNODECOUNT" == "2" ]; then
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/locator
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
+fi
+
 
 if [ "$NODETYPE" == "datastore" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/datastore
-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
+fi
+
+if [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/datastore
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/lead
-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
 fi
 
+if [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+    mkdir -p /opt/snappydata/work/lead
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
+fi
 # ---------------------------------------------------------------------------------------------
 
