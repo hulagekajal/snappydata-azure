@@ -147,43 +147,41 @@ cd ${DIR}
 # wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
-LOCATOR2HOSTNAME="${CLUSTERNAME}-locator2"
+
+# Below if block derives name of other locator from this locator. Assumes there are only two locators.
+OTHER_LOCATOR=""
+if [ "$LOCATORNODECOUNT" == "2" ]; then
+  echo ${LOCATORHOSTNAME} | grep '1$'
+  if [ echo $? == 0 ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
+  elif
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
+  fi
+fi
 
 if [ "$NODETYPE" == "locator" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/locator
-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
+    if [ ${OTHER_LOCATOR} != "" ]; then
+      OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
+    fi
+    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
 fi
 
-if [ "$NODETYPE" == "locator" && "$LOCATORNODECOUNT" == "2" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/locator
-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
+if [ ${OTHER_LOCATOR} != "" ]; then
+    OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
 fi
-
 
 if [ "$NODETYPE" == "datastore" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/datastore
-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
-fi
-
-if [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/datastore
-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
+    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
     mkdir -p /opt/snappydata/work/lead
-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
-fi
-
-if [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/lead
-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
+    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
 fi
 # ---------------------------------------------------------------------------------------------
 
