@@ -107,10 +107,9 @@
     },
     "leadAndDataStoreVmSize":{
       "type": "string",
-      "defaultValue": "Standard_D2",
+      "defaultValue": "Standard_D3",
       "allowedValues": [
-        "Standard_D2",
-        "Standard_D3",
+       "Standard_D3",
         "Standard_D4",
         "Standard_D12",
         "Standard_D13",
@@ -302,7 +301,6 @@
     },
     "linuxConfiguration_password": { },
     "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]"
-    
   },
 
 
@@ -388,7 +386,7 @@
               "direction": "Inbound"
             }
           },
-	  {  
+		 {  
             "name": "snap_rule",
             "properties": {
               "description": "Allow HTTP access",
@@ -399,32 +397,6 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 101,
-              "direction": "Inbound"
-            }
-          }
-
-        ]
-      }
-    },
-
-    {                       
-      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('leadSecurityRules')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "ssh_rulelead",
-            "properties": {
-              "description": "Allow SSH access",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
               "direction": "Inbound"
             }
           },
@@ -470,6 +442,32 @@
               "direction": "Inbound"
             }
           }
+
+        ]
+      }
+    },
+
+    {                       
+      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('leadSecurityRules')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ssh_rulelead",
+            "properties": {
+              "description": "Allow SSH access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          }
         ]
       }
     },
@@ -505,7 +503,7 @@
           {
             "name": "[variables('subnetApp')]",
             "properties": {
-              "addressPrefix": "[variables('subnetDataIPAddressPrefix')]",
+              "addressPrefix": "[variables('subnetAppIPAddressPrefix')]",
               "networkSecurityGroup": {
                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('leadSecurityRules'))]"
               }
@@ -696,8 +694,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]",
-	"[concat(variables('dataStoreVmName'),copyIndex(1))]"
+        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]"
       ],
       "copy": {
         "name": "leadNicsCopy",
@@ -730,8 +727,7 @@
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('leadNicName'),copyIndex(1)))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
-	"[concat(variables('dataStoreVmName'),copyIndex(1))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "copy": {
         "name": "leadVmsCopy",
@@ -837,8 +833,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]",
-	"[concat(variables('locatorVmName'),copyIndex(1))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]"
       ],
       "copy": {
         "name": "dataStoreNicsCopy",
@@ -871,8 +866,7 @@
         "[concat('Microsoft.Compute/availabilitySets/', variables('dataStoreAvailabilitySetSettings').name)]",
         "dataStoreStorageAccountsCopy",
         "[concat('Microsoft.Network/networkInterfaces/', concat(variables('dataStoreNicName'),copyIndex(1)))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
-	"[concat(variables('locatorVmName'),copyIndex(1))]", 
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
       ],
       "copy": {
         "name": "dataStoreVmsCopy",
@@ -955,5 +949,5 @@
     }
   ]
 
-}
 
+}
