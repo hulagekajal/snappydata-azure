@@ -308,7 +308,7 @@
           "name": "locOp",
           "count": "[parameters('locatorNodeCount')]",
           "input": {
-            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex('locOp',1))))).dnsSettings.fqdn)]",
+            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex('locOp',1)))).dnsSettings.fqdn)]",
             "SizeGB": "1",
             "diskIndex": "[copyIndex('locOp')]"
           }
@@ -321,7 +321,7 @@
           "name": "leadOp", 
           "count": "[parameters('leadNodeCount')]",
           "input": {
-            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex('leadOp',1))))).dnsSettings.fqdn)]",
+            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex('leadOp',1)))).dnsSettings.fqdn)]",
             "diskSizeGB": "1",
             "diskIndex": "[copyIndex('leadOp')]"
           }
