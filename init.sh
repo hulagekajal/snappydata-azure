@@ -33,9 +33,8 @@ while getopts "t:i:s:c:l:u:a:n:f:" opt; do
         ;;
         n) LOCATORNODECOUNT=$OPTARG
         ;;
-	f) CONFPARAMETERS=$OPTARG
+        f) CONFPARAMETERS=$OPTARG
         ;;
-
     esac
     done
 
@@ -52,7 +51,7 @@ retry() {
     local -r -i max_attempts="$1"; shift
     local -r cmd="$@"
     local -i attempt_num=1
- 
+
     until $cmd
     do
         if (( attempt_num == max_attempts ))
@@ -138,18 +137,13 @@ tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
-# Uncomment if you want to download test tools and data sets
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/scripts.tgz
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/snappy-cluster_2.10-0.5-tests.jar
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
-
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
 
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 644 ~/.ssh/authorized_keys
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
 OTHER_LOCATOR=""
@@ -162,9 +156,10 @@ if [ "$LOCATORNODECOUNT" == "2" ]; then
   fi
 fi
 
+chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+mkdir -p "/opt/snappydata/work/${NODETYPE}"
+
 if [ "$NODETYPE" == "locator" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/locator
     if [ ${OTHER_LOCATOR} != "" ]; then
       OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
     fi
@@ -177,15 +172,9 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/datastore
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
     ${DIR}/sbin/snappy-servers.sh start
-fi
-
-if [ "$NODETYPE" == "lead" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/lead
+elif [ "$NODETYPE" == "lead" ]; then
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
     ${DIR}/sbin/snappy-leads.sh start
 fi
