@@ -225,7 +225,7 @@
     "subnetDataStartAddress": "10.0.1.4",
     "subnetDataIPAddressParts": "[split(variables('subnetDataStartAddress'),'.')]",
     "subnetApp": "subnet-app",
-    "subnetAppIPAddressPrefix": "10.0.2.0/24",
+    "subnetAppIPAddressPrefix": "10.0.1.0/24",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetDataID": "[concat(variables('vnetID'),'/subnets/',variables('subnetData'))]",
     "subnetAppID": "[concat(variables('vnetID'),'/subnets/',variables('subnetApp'))]",
