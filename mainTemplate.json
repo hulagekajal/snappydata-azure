@@ -249,8 +249,8 @@
       ], 
 
     "leadPrivateIPAddress": [ 
-        "10.0.2.6",
-        "10.0.2.7"
+        "10.0.1.6",
+        "10.0.1.7"
       ], 
 
     "locatorAvailabilitySetSettings": {
@@ -505,7 +505,7 @@
           {
             "name": "[variables('subnetApp')]",
             "properties": {
-              "addressPrefix": "[variables('subnetAppIPAddressPrefix')]",
+              "addressPrefix": "[variables('subnetDataIPAddressPrefix')]",
               "networkSecurityGroup": {
                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('leadSecurityRules'))]"
               }
