@@ -107,9 +107,10 @@
     },
     "leadAndDataStoreVmSize":{
       "type": "string",
-      "defaultValue": "Standard_D3",
+      "defaultValue": "Standard_D2",
       "allowedValues": [
-       "Standard_D3",
+        "Standard_D2",
+        "Standard_D3",
         "Standard_D4",
         "Standard_D12",
         "Standard_D13",
@@ -248,8 +249,8 @@
       ], 
 
     "leadPrivateIPAddress": [ 
-        "10.0.1.6",
-        "10.0.1.7"
+        "10.0.2.6",
+        "10.0.2.7"
       ], 
 
     "locatorAvailabilitySetSettings": {
@@ -300,7 +301,33 @@
       }
     },
     "linuxConfiguration_password": { },
-    "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]"
+    "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]",
+    "LocatorOutputCopy": {  
+      "copy": [
+        {
+          "name": "locOp",
+          "count": "[parameters('locatorNodeCount')]",
+          "input": {
+            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex('locOp',1))))).dnsSettings.fqdn)]",
+            "SizeGB": "1",
+            "diskIndex": "[copyIndex('locOp')]"
+          }
+        }
+      ]
+    },
+   "LeadOutputCopy": {  
+      "copy": [
+        {
+          "name": "leadOp", 
+          "count": "[parameters('leadNodeCount')]",
+          "input": {
+            "name": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex('leadOp',1))))).dnsSettings.fqdn)]",
+            "diskSizeGB": "1",
+            "diskIndex": "[copyIndex('leadOp')]"
+          }
+        }
+      ]
+    }
   },
 
 
@@ -386,7 +413,7 @@
               "direction": "Inbound"
             }
           },
-		 {  
+	  {  
             "name": "snap_rule",
             "properties": {
               "description": "Allow HTTP access",
@@ -397,6 +424,32 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+
+        ]
+      }
+    },
+
+    {                       
+      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('leadSecurityRules')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ssh_rulelead",
+            "properties": {
+              "description": "Allow SSH access",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
               "direction": "Inbound"
             }
           },
@@ -439,32 +492,6 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 105,
-              "direction": "Inbound"
-            }
-          }
-
-        ]
-      }
-    },
-
-    {                       
-      "apiVersion": "[variables('apiVersions').network.networkSecurityGroups]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('leadSecurityRules')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "ssh_rulelead",
-            "properties": {
-              "description": "Allow SSH access",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "[parameters('allowedIPAddressPrefix')]",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
               "direction": "Inbound"
             }
           }
@@ -694,7 +721,8 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]"
+        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]",
+	"[concat(variables('dataStoreVmName'),copyIndex(1))]"
       ],
       "copy": {
         "name": "leadNicsCopy",
@@ -727,7 +755,8 @@
         "[concat('Microsoft.Compute/availabilitySets/', variables('leadAvailabilitySetSettings').name)]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('leadNicName'),copyIndex(1)))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
+	"[concat(variables('dataStoreVmName'),copyIndex(1))]"
       ],
       "copy": {
         "name": "leadVmsCopy",
@@ -833,7 +862,8 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]",
+	"[concat(variables('locatorVmName'),copyIndex(1))]"
       ],
       "copy": {
         "name": "dataStoreNicsCopy",
@@ -866,7 +896,8 @@
         "[concat('Microsoft.Compute/availabilitySets/', variables('dataStoreAvailabilitySetSettings').name)]",
         "dataStoreStorageAccountsCopy",
         "[concat('Microsoft.Network/networkInterfaces/', concat(variables('dataStoreNicName'),copyIndex(1)))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
+	"[concat(variables('locatorVmName'),copyIndex(1))]", 
       ],
       "copy": {
         "name": "dataStoreVmsCopy",
@@ -947,7 +978,19 @@
         }
       }
     }
-  ]
+  ],
 
+  "outputs": {
+    "locatorPublicIP": {
+      "type": "array",
+      "value": "[variables('LocatorOutputCopy').locOp]"
+    },
+    
+    "leadPublicIP": {
+      "type": "array",
+      "value": "[variables('LeadOutputCopy').leadOp]"
+    }
+  }
 
 }
+
