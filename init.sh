@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -a LOCATOR1HOSTNAME  -u BASEURL
-# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -a kl-locator1  -u https://github.com/hulagekajal/snappydata-azure/master
+# init.sh -t NODETYPE -i LOCALIP -s STARTADDRESS -c DATASTORENODECOUNT -a LOCATOR1HOSTNAME -b LOCATOR2HOSTNAME -u BASEURL
+# sh init.sh -d standard -t locator -i 10.0.1.4 -s 10.0.1.4 -c 2 -a av-locator1 -b av-locator2 -u https://raw.githubusercontent.com/arsenvlad/snappydata-azure/master
 
 log()
 {
-	echo "$1"
-	logger "$1"
+    echo "$1"
+    logger "$1"
 }
 
 # Initialize local variables
@@ -14,23 +14,29 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:a:u:" opt; do
-	log "Option $opt set with value (${OPTARG})"
-	case "$opt" in
-		t)	NODETYPE=$OPTARG
-		;;
-		i)	LOCALIP=$OPTARG
-		;;
-		s)	STARTADDRESS=$OPTARG
-		;;
-		c)	DATASTORENODECOUNT=$OPTARG
-		;;
-		a)	LOCATOR1HOSTNAME=$OPTARG
-		;;
-		u)	BASEURL=$OPTARG
-		;;
-	esac
-done
+while getopts "t:i:s:c:l:u:a:n:f:" opt; do
+    log "Option $opt set with value (${OPTARG})"
+    case "$opt" in
+        t) NODETYPE=$OPTARG
+        ;;
+        i) LOCALIP=$OPTARG
+        ;;
+        s) STARTADDRESS=$OPTARG
+        ;;
+        c) DATASTORENODECOUNT=$OPTARG
+        ;;
+        l) LOCATORHOSTNAME=$OPTARG
+        ;;
+        u) BASEURL=$OPTARG
+        ;;
+        a) ADMINUSER=$OPTARG
+        ;;
+        n) LOCATORNODECOUNT=$OPTARG
+        ;;
+        f) CONFPARAMETERS=$OPTARG
+        ;;
+    esac
+    done
 
 fatal() {
     msg=${1:-"Unknown Error"}
@@ -45,13 +51,13 @@ retry() {
     local -r -i max_attempts="$1"; shift
     local -r cmd="$@"
     local -i attempt_num=1
- 
+
     until $cmd
     do
         if (( attempt_num == max_attempts ))
         then
             log "Command $cmd attempt $attempt_num failed and there are no more attempts left!"
-			return 1
+        return 1
         else
             log "Command $cmd attempt $attempt_num failed. Trying again in 5 + $attempt_num seconds..."
             sleep $(( 5 + attempt_num++ ))
@@ -77,29 +83,42 @@ if [[ -z ${STARTADDRESS} ]]; then
 fi
 
 if [[ -z ${DATASTORENODECOUNT} ]]; then
-    fatal "No segments count -c specified, can't proceed."
+    fatal "No datastore count -c specified, can't proceed."
+fi
+
+if [[ -z ${LOCATORHOSTNAME} ]]; then
+    fatal "No locator hostname -l specified, can't proceed."
 fi
 
 if [[ -z ${BASEURL} ]]; then
     fatal "No base URL -u specified, can't proceed."
 fi
 
-log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL"
+if [[ -z ${ADMINUSER} ]]; then
+    fatal "No admin username -a specified, can't proceed."
+fi
+
+if [[ -z ${LOCATORNODECOUNT} ]]; then
+    fatal "No locator count -n specified, can't proceed."
+fi
+
+
+log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
 # Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
 create_internal_ip_file()
 {
-	# Generate IP addresses of the nodes based on the convention of locator1, leader1,  data stores
-	IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
-	for (( c=0; c<2+$DATASTORENODECOUNT; c++ ))
-	do
-		octet1=${startaddress_parts[0]}
-		octet2=${startaddress_parts[1]}
-		octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
-		octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
-		ip=$octet1"."$octet2"."$octet3"."$octet4
-		echo $ip
-	done > ${INTERNAL_IP_FILE}
+    # Generate IP addresses of the nodes based on the convention of locator1, leader1, data stores
+    IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
+    for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
+    do
+        octet1=${startaddress_parts[0]}
+        octet2=${startaddress_parts[1]}
+        octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
+        octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
+        ip=$octet1"."$octet2"."$octet3"."$octet4
+        echo $ip
+    done > ${INTERNAL_IP_FILE}
 }
 
 # ============================================================================================================
@@ -111,32 +130,53 @@ yum install -y java-1.8.0-openjdk
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
-wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2/snappydata-1.0.2-bin.tar.gz
+wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
-tar -xzf snappydata-1.0.2-bin.tar.gz  --directory ${DIR} --strip 1
+tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
-# Uncomment if you want to download test tools and data sets
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/scripts.tgz
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/snappy-cluster_2.10-0.5-tests.jar
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
-# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
-
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
+LOCAL_IP=`hostname -I`
+
+# Setup passwordless ssh
+ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 644 ~/.ssh/authorized_keys
+
+# Below if block derives name of other locator from this locator. Assumes there are only two locators.
+OTHER_LOCATOR=""
+if [ "$LOCATORNODECOUNT" == "2" ]; then
+  echo ${LOCATORHOSTNAME} | grep '1$'
+  if [ $? == 0 ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
+  else
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
+  fi
+fi
+
+chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+mkdir -p "/opt/snappydata/work/${NODETYPE}"
 
 if [ "$NODETYPE" == "locator" ]; then
-	${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATOR1HOSTNAME}:10334
+    if [ ${OTHER_LOCATOR} != "" ]; then
+      OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
+    fi
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
+    ${DIR}/sbin/snappy-locators.sh start
+fi
+
+if [ ${OTHER_LOCATOR} != "" ]; then
+    OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-	${DIR}/bin/snappy server start -locators=${LOCATOR1HOSTNAME}:10334
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
+    ${DIR}/sbin/snappy-servers.sh start
+elif [ "$NODETYPE" == "lead" ]; then
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    ${DIR}/sbin/snappy-leads.sh start
 fi
-
-if [ "$NODETYPE" == "lead" ]; then
-	${DIR}/bin/snappy leader start -locators=${LOCATOR1HOSTNAME}:10334
-fi
-
 # ---------------------------------------------------------------------------------------------
 
