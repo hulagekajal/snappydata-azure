@@ -257,7 +257,6 @@
       "locatorNicName":"[concat(parameters('clusterName'),'-locator-nic')]",
       "leadNicName":"[concat(parameters('clusterName'),'-lead-nic')]",
       "dnsNameForLocatorPublicIP":"[concat(parameters('dnsNamePrefix'),'-locator-',uniqueString(resourceGroup().id))]",
-             //"[resourceId('Microsoft.Network/publicIPAddresses',variables('lead2PublicIPName'))]"
       "dnsNameForLeadPublicIP":"[concat(parameters('dnsNamePrefix'),'-lead-',uniqueString(resourceGroup().id))]",
       "locatorPrivateIPAddress":[  
          "10.0.1.4",
