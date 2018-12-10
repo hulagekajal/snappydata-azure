@@ -747,7 +747,7 @@
                         "id":"[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))]"
                      },
                      "subnet":{  
-                        "id":"[variables('subnetDataID')]"
+                        "id":"[variables('subnetAppID')]"
                      }
                   }
                }
