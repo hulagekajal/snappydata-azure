@@ -112,6 +112,7 @@
          "type":"string",
          "defaultValue":"Standard_D3",
          "allowedValues":[  
+            "Standard_D2", 
             "Standard_D3",
             "Standard_D4",
             "Standard_D12",
