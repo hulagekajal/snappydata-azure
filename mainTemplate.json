@@ -321,7 +321,7 @@
                "name":"locOp",
                "count":"[parameters('locatorNodeCount')]",
                "input":{  
-                  "name":"[concat(concat(variables('locatorPublicIPName'),copyIndex('locOp',1)),':5050']"
+                  "name":"[concat(concat(variables('locatorPublicIPName'),copyIndex('locOp',1)),':5050')]"
                }
             }
          ]
