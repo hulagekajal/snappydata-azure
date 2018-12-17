@@ -168,8 +168,10 @@ fi
 if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
   fi
-  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators 
+  else
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
   ${DIR}/sbin/snappy-locators.sh start
 fi
 
