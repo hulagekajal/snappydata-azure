@@ -139,7 +139,7 @@ cd ${DIR}
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
-PUBLIC_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+PUBLIC_IP=`curl ifconfig.co`
 
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
