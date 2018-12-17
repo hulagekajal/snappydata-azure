@@ -155,10 +155,10 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
-OTHER_LOCATOR=""
+
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
-
+OTHER_LOCATOR=""
 if [ "${LOCATORNODECOUNT}" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ $? == 0 ]; then
@@ -169,9 +169,9 @@ if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
     echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
-  fi
   else
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  fi 
   ${DIR}/sbin/snappy-locators.sh start
 fi
 
