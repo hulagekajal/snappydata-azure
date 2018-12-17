@@ -154,41 +154,41 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
-OTHER_LOCATOR=""
+
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
 
-if [ "$LOCATORNODECOUNT" == "2" ]; then
-  echo ${LOCATORHOSTNAME} | grep '1$'
-  if [ $? == 0 ]; then
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-  else
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
-  fi
-fi
 
 if [ "$NODETYPE" == "locator" && "$LOCATORNODECOUNT" == "2" ]; then
+    echo ${LOCATORHOSTNAME} | grep '1$'
+    if [ $? == 0 ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
+    else
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
+    fi
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
     echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
     ${DIR}/sbin/snappy-locators.sh start
 else
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP}  -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
     ${DIR}/sbin/snappy-locators.sh start
 fi
 
 
 if  [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
     ${DIR}/sbin/snappy-servers.sh start
 else
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
     ${DIR}/sbin/snappy-servers.sh startfi
 
 if  [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
     ${DIR}/sbin/snappy-leads.sh start
 else
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
     ${DIR}/sbin/snappy-leads.sh start
 fi
 # ---------------------------------------------------------------------------------------------

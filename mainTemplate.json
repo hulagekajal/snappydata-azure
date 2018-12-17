@@ -4,7 +4,7 @@
    "parameters":{  
       "artifactsBaseUrl":{  
          "type":"string",
-         "defaultValue":"https://raw.githubusercontent.com/hulagekajal/snappydata-azure/shouldwork",
+         "defaultValue":"https://raw.githubusercontent.com/hulagekajal/snappydata-azure/scripts_2",
          "metadata":{  
             "description":"Base URL for artifacts such as nested templates and scripts",
             "artifactsBaseUrl":""
