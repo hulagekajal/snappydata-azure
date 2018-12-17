@@ -148,6 +148,7 @@ cd ${DIR}
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
+PUBLIC_IP=`curl ifconfig.co`
 
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
@@ -155,6 +156,9 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
 OTHER_LOCATOR=""
+chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+mkdir -p "/opt/snappydata/work/${NODETYPE}"
+
 if [ "$LOCATORNODECOUNT" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ $? == 0 ]; then
@@ -165,12 +169,10 @@ if [ "$LOCATORNODECOUNT" == "2" ]; then
 fi
 
 if [ "$NODETYPE" == "locator" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/locator
     if [ ${OTHER_LOCATOR} != "" ]; then
       OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
     fi
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -hostname-for-clients=${PUBLICIPADDRESS} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
     ${DIR}/sbin/snappy-locators.sh start
 fi
 
@@ -179,15 +181,11 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/datastore
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLICIPADDRESS} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
     ${DIR}/sbin/snappy-servers.sh start
 fi
 
 if [ "$NODETYPE" == "lead" ]; then
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
-    mkdir -p /opt/snappydata/work/lead
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
     ${DIR}/sbin/snappy-leads.sh start
 fi
