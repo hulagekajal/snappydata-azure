@@ -159,7 +159,7 @@ OTHER_LOCATOR=""
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
 
-if [ "$LOCATORNODECOUNT" == "2" ]; then
+if [ "${LOCATORNODECOUNT}" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ $? == 0 ]; then
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
