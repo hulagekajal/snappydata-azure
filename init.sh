@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:l:u:a:n:f:p:" opt; do
+while getopts "t:i:s:c:l:u:a:n:f:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -34,8 +34,6 @@ while getopts "t:i:s:c:l:u:a:n:f:p:" opt; do
         n) LOCATORNODECOUNT=$OPTARG
         ;;
         f) CONFPARAMETERS=$OPTARG
-        ;;
-        p) PUBLICIPADDRESS=$OPTARG
         ;;
     esac
     done
@@ -141,11 +139,13 @@ cd ${DIR}
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
+PUBLIC_IP=`dig +short myip.opendns.com @resolver1.opendns.com`
 
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 644 ~/.ssh/authorized_keys
+
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
 OTHER_LOCATOR=""
@@ -165,7 +165,7 @@ if [ "$NODETYPE" == "locator" ]; then
     if [ ${OTHER_LOCATOR} != "" ]; then
       OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
     fi
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS} -hostname-for-clients=${PUBLICIPADDRESS}" > ${DIR}/conf/locators 
+    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS} -hostname-for-clients=${PUBLIC_IP}" > ${DIR}/conf/locators 
     ${DIR}/sbin/snappy-locators.sh start
 fi
 
@@ -174,7 +174,7 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 ${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS} -hostname-for-clients=${PUBLICIPADDRESS}" > ${DIR}/conf/servers
+    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 ${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS} -hostname-for-clients=${PUBLIC_IP}" > ${DIR}/conf/servers
     ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 ${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
