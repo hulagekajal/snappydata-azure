@@ -181,7 +181,8 @@ if  [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
     ${DIR}/sbin/snappy-servers.sh start
 else
     echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
-    ${DIR}/sbin/snappy-servers.sh startfi
+    ${DIR}/sbin/snappy-servers.sh start
+fi
 
 if  [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
