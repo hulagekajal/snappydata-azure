@@ -702,7 +702,7 @@
          "name":"[concat(concat(variables('LocatorVmName'),copyIndex(1)), '/init')]",
          "location":"[parameters('location')]",
          "dependsOn":[  
-            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('LocatorVmName'),copyIndex(1)))]"
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('LocatorVmName'),'1'))]"
          ],
          "copy":{  
             "name":"locatorInitExtensionsCopy",
@@ -869,7 +869,7 @@
          "dependsOn":[  
             "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
             "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('dataStorePublicIPName'),copyIndex(1)))]",
-            "[concat(variables('locatorVmName'),copyIndex(1))]"
+            "[concat(variables('locatorVmName'),'1')]"
          ],
          "copy":{  
             "name":"dataStoreNicsCopy",
@@ -903,7 +903,7 @@
             "dataStoreStorageAccountsCopy",
             "[concat('Microsoft.Network/networkInterfaces/', concat(variables('dataStoreNicName'),copyIndex(1)))]",
             "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
-            "[concat(variables('locatorVmName'),copyIndex(1))]"
+            "[concat(variables('locatorVmName'),'1')]"
          ],
          "copy":{  
             "name":"dataStoreVmsCopy",
