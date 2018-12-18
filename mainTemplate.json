@@ -181,6 +181,14 @@
         "description":"The number of virtual machines instances to provision for the lead nodes"
       }
     },
+    "launchzeppelin":{   
+      "type":"string",
+      "defaultValue":"No", 
+      "metadata":{   
+         "description":"Password for administrator"
+        }
+     }, 
+
     "allowedIPAddressPrefix":{  
       "type":"string",
       "defaultValue":"0.0.0.0/0",
@@ -211,11 +219,12 @@
     }
   },
   "variables":{  
-    "apiVersions":{  
-      "resources":{  
+    "singleQuote": "'",
+    "apiVersions":{
+      "resources":{
         "deployments":"2016-02-01"
       },
-      "storage":{  
+      "storage":{
         "storageAccounts":"2016-01-01"
       },
       "network":{  
@@ -431,7 +440,7 @@
       "type":"Microsoft.Network/networkSecurityGroups",
       "name":"[variables('leadSecurityRules')]",
       "location":"[parameters('location')]",
-      "properties":{  
+      "properties":{
         "securityRules":[  
           {  
             "name":"ssh_rulelead",
@@ -475,13 +484,13 @@
               "direction":"Inbound"
             }
           },
-          {  
+          {
             "name":"snappy_rule",
             "properties":{  
               "description":"Allow HTTP access",
               "protocol":"Tcp",
               "sourcePortRange":"*",
-              "destinationPortRange":"3768",
+              "destinationPortRange": "[if(equals(parameters('launchZeppelin'), 'yes'), '8080', '22')]",
               "sourceAddressPrefix":"[parameters('allowedIPAddressPrefix')]",
               "destinationAddressPrefix":"*",
               "access":"Allow",
@@ -973,14 +982,18 @@
       }
     }
   ],
-  "outputs":{  
-    "locator1PublicIP": {
+  "outputs":{
+    "SnappyData Dashboard": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn)]"
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),'1'))).dnsSettings.fqdn, ':5050')]"
     },
-    "lead1PublicIP": {
+    "Connect via snappy shell": {
       "type": "string",
-      "value": "[concat(concat('You can Access Snappydata Dashboard on : ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),'1'))).dnsSettings.fqdn)),':5050')]"
+      "value": "[concat('connect client ', variables('singleQuote'), reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn, ':1527', variables('singleQuote'), ';')]"
+    },
+    "SnappyData JDBC url": {
+      "type": "string",
+      "value": "[concat('jdbc:snappydata://', reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn, ':1527')]"
     }
    }
 }

@@ -121,6 +121,15 @@ create_internal_ip_file()
     done > ${INTERNAL_IP_FILE}
 }
 
+launch_zeppelin()
+{
+    # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
+    # download zeppelin interpreter 0.7.3.4 for snappydata
+    # download pre-created sample notebooks for snappydata
+    # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
+    # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
+    # start zeppelin server
+}
 # ============================================================================================================
 # MAIN
 # ============================================================================================================
@@ -130,6 +139,7 @@ yum install -y java-1.8.0-openjdk
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
+# TODO Get the latest snappydata distribution
 wget --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
@@ -179,6 +189,10 @@ if [ "$NODETYPE" == "datastore" ]; then
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
   echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+  # if (launch-zeppelin == true); then
+    # -zeppelin-interpreter-enable=true -classpath=${DIR}/snappydata-zeppelin-0.7.3.4.jar
+    # launch_zeppelin()
+  # fi
   ${DIR}/sbin/snappy-leads.sh start
 fi
 
