@@ -323,7 +323,8 @@
           "name":"[concat('locator ', copyIndex('locator-array', 1))]"
         }
       }
-    ]
+    ],
+    "loc1": "[substring(variables('locator-array'),2,length(variables('locator-array')))]"
   },
   "resources":[  
     {  
@@ -715,7 +716,7 @@
       "dependsOn":[  
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
         "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('leadPublicIPName'),copyIndex(1)))]",
-        "[concat(variables('dataStoreVmName'),copyIndex(1))]"
+        "dataStoreVmsCopy"
       ],
       "copy":{  
         "name":"leadNicsCopy",
@@ -749,7 +750,7 @@
         "[concat('Microsoft.Storage/storageAccounts/', variables('leadStorageAccount'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('leadNicName'),copyIndex(1)))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
-        "[concat(variables('dataStoreVmName'),copyIndex(1))]"
+        "dataStoreVmsCopy"
       ],
       "copy":{  
         "name":"leadVmsCopy",
@@ -890,7 +891,7 @@
         "dataStoreStorageAccountsCopy",
         "[concat('Microsoft.Network/networkInterfaces/', concat(variables('dataStoreNicName'),copyIndex(1)))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
-        "[concat(variables('locatorVmName'),'1')]"
+        "locatorVmsCopy"
       ],
       "copy":{  
         "name":"dataStoreVmsCopy",
@@ -975,7 +976,7 @@
   "outputs":{  
       "locatorPublicIP":{  
          "type":"array",
-         "value":"[variables('locator-array')]"
+         "value":"[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('loc1'))).dnsSettings.fqdn)]"
       }
    }
 }
