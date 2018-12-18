@@ -974,10 +974,14 @@
     }
   ],
   "outputs":{  
-      "locatorPublicIP":{  
-         "type":"array",
-         "value":"[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',variables('loc1'))).dnsSettings.fqdn)]"
-      }
+    "locator1PublicIP": {
+      "type": "string",
+      "value": "[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn)]"
+    },
+    "lead1PublicIP": {
+      "type": "string",
+      "value": "[concat(concat('You can Access Snappydata Dashboard on : ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),'1'))).dnsSettings.fqdn)),':5050')]"
+    }
    }
 }
 
