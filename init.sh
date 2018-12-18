@@ -180,10 +180,10 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-  echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-  echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
+  echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   ${DIR}/sbin/snappy-leads.sh start
 fi
 
