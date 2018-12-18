@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:l:u:a:n:f:" opt; do
+while getopts "t:i:s:c:l:u:a:n:f" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -33,7 +33,7 @@ while getopts "t:i:s:c:l:u:a:n:f:" opt; do
         ;;
         n) LOCATORNODECOUNT=$OPTARG
         ;;
-        f) CONFPARAMETERS=$OPTARG
+	f) CONFPARAMETERS=$OPTARG
         ;;
     esac
     done
@@ -51,7 +51,7 @@ retry() {
     local -r -i max_attempts="$1"; shift
     local -r cmd="$@"
     local -i attempt_num=1
-
+ 
     until $cmd
     do
         if (( attempt_num == max_attempts ))
@@ -137,6 +137,12 @@ tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
 
 cd ${DIR}
 
+# Uncomment if you want to download test tools and data sets
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/scripts.tgz
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/snappy-cluster_2.10-0.5-tests.jar
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/TPCH-1GB.zip
+# wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
+
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
 PUBLIC_IP=`curl ifconfig.co`
@@ -144,41 +150,37 @@ PUBLIC_IP=`curl ifconfig.co`
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-chmod 644 ~/.ssh/authorized_keys
-
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
-OTHER_LOCATOR=""
-if [ "$LOCATORNODECOUNT" == "2" ]; then
-  echo ${LOCATORHOSTNAME} | grep '1$'
-  if [ $? == 0 ]; then
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-  else
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
-  fi
-fi
 
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
-
+OTHER_LOCATOR=""
+if [ "${LOCATORNODECOUNT}" == "2" ]; then
+  echo ${LOCATORHOSTNAME} | grep '1$'
+  if [ $? == 0 ]; then
+    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
+  fi
+fi
 if [ "$NODETYPE" == "locator" ]; then
-    if [ ${OTHER_LOCATOR} != "" ]; then
-      OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
-    fi
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator -hostname-for-clients=${PUBLIC_IP} ${CONFPARAMETERS}" > ${DIR}/conf/locators 
-    ${DIR}/sbin/snappy-locators.sh start
+  if [ ${OTHER_LOCATOR} != "" ]; then
+    OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
+  fi
+  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  ${DIR}/sbin/snappy-locators.sh start
 fi
 
 if [ ${OTHER_LOCATOR} != "" ]; then
-    OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
+  OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 ${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore -hostname-for-clients=${PUBLIC_IP} ${CONFPARAMETERS}" > ${DIR}/conf/servers
-    ${DIR}/sbin/snappy-servers.sh start
+  echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 ${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
-    ${DIR}/sbin/snappy-leads.sh start
+  echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+  ${DIR}/sbin/snappy-leads.sh start
 fi
+
 # ---------------------------------------------------------------------------------------------
 
