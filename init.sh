@@ -134,22 +134,9 @@ launch_zeppelin()
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
 
-    if [[ ! -d ${ZEP_DIR} ]]; then
-      if [[ ! -e "${ZEP_DIR}.tgz" ]]; then
-        echo "Downloading Apache Zeppelin distribution..."
-        wget -q "${ZEP_URL_MIRROR}"
-        # TODO exit if download fails
-        if [[ $? -ne 0 ]]; then
-          echo "Could not download Apache Zeppelin distribution. Apache Zeppelin server will not be available."
-          exit 3
-        fi
-      fi
-      tar -xf "${ZEP_DIR}.tgz"
-    fi
-
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
-    #wget -q "${ZEP_URL_MIRROR}"
-    #tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
+    wget -q "${ZEP_URL_MIRROR}"
+    tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
 
   
     # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
@@ -215,8 +202,8 @@ if [ "$NODETYPE" == "datastore" ]; then
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
    if ("$LAUNCHZEPPELIN" == "yes"); then
-      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true -classpath=${DIR}/${ZEP_INTP_JAR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
-      launch_zeppelin()
+      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true ${CONFPARAMETERS}" > ${DIR}/conf/leads
+      launch_zeppelin
    else
       echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
    fi
