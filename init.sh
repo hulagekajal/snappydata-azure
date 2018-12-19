@@ -130,13 +130,26 @@ launch_zeppelin()
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VERSION}/${ZEP_DIR}.tgz"
     #ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
     #ZEP_NOTEBOOKS_DIR="notebook"
-    PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
+    #PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
 
+    if [[ ! -d ${ZEP_DIR} ]]; then
+      if [[ ! -e "${ZEP_DIR}.tgz" ]]; then
+        echo "Downloading Apache Zeppelin distribution..."
+        wget -q "${ZEP_URL_MIRROR}"
+        # TODO exit if download fails
+        if [[ $? -ne 0 ]]; then
+          echo "Could not download Apache Zeppelin distribution. Apache Zeppelin server will not be available."
+          exit 3
+        fi
+      fi
+      tar -xf "${ZEP_DIR}.tgz"
+    fi
+
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
-    wget -q "${ZEP_URL_MIRROR}"
-    tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
+    #wget -q "${ZEP_URL_MIRROR}"
+    #tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
 
   
     # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
