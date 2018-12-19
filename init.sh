@@ -128,8 +128,8 @@ launch_zeppelin()
     ZEP_VERSION="0.7.3"
     ZEP_DIR="zeppelin-${ZEP_VERSION}-bin-netinst"
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VERSION}/${ZEP_DIR}.tgz"
-    ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
-    ZEP_NOTEBOOKS_DIR="notebook"
+    #ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
+    #ZEP_NOTEBOOKS_DIR="notebook"
     PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
@@ -139,12 +139,12 @@ launch_zeppelin()
     tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
 
     # download pre-created sample notebooks for snappydata
-    wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
-    tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
-    find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
+    #wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
+    #tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
+    #find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
 
-    echo "Copying sample notebooks..."
-    cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${ZEP_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+    #echo "Copying sample notebooks..."
+    #cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${ZEP_DIR}/${ZEP_NOTEBOOKS_DIR}/"
  
     # download zeppelin interpreter 0.7.3.4 for snappydata
     ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
@@ -224,11 +224,11 @@ if [ "$NODETYPE" == "datastore" ]; then
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
    if ("LAUNCHZEPPELIN" == "Yes"); then
+      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true -classpath=${DIR}/${ZEP_INTP_JAR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+      launch_zeppelin()
+   else
       echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
-   if ("LAUNCHZEPPELIN" == true); then
-    -zeppelin-interpreter-enable=true -classpath=${DIR}/snappydata-zeppelin-0.7.3.4.jar
-    # launch_zeppelin()
-  # fi
+   fi
   ${DIR}/sbin/snappy-leads.sh start
 fi
 
