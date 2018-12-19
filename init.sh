@@ -125,44 +125,57 @@ create_internal_ip_file()
 
 launch_zeppelin()
 {
-    ZEP_VERSION="0.7.3"
-    ZEP_DIR="zeppelin-${ZEP_VERSION}-bin-netinst"
-    ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VERSION}/${ZEP_DIR}.tgz"
+    ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
     ZEP_NOTEBOOKS_DIR="notebook"
-    PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
+    PUBLIC_HOSTNAME="${PUBLIC_IP}" 
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
 
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
+    echo "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
     wget -q "${ZEP_URL_MIRROR}"
-    tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
+    tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR}
     
     # download pre-created sample notebooks for snappydata
+    echo "Downloading Zeppelin notebooks from ${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz ..."
     wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
     tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
     find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
 
     echo "Copying sample notebooks..."
-    cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${ZEP_DIR}/${ZEP_NOTEBOOKS_DIR}/"
- 
+    cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${Z_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+
+    ${Z_DIR}/bin/install-interpreter.sh --name snappydata --artifact io.snappydata:snappydata-zeppelin:0.7.3.4
+
     # download zeppelin interpreter 0.7.3.4 for snappydata
     ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
     INTERPRETER_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/releases/download/v0.7.3.4/${ZEP_INTP_JAR}"
-    INTERPRETER_DIR="${ZEP_DIR}/interpreter/snappydata"
-    mkdir -p "${INTERPRETER_DIR}"
+    INTERPRETER_DIR="${Z_DIR}/interpreter/snappydata"
+    # mkdir -p "${INTERPRETER_DIR}"
     wget -q "${INTERPRETER_URL}"
-    mv "${ZEP_INTP_JAR}" "${INTERPRETER_DIR}"
-    jar -xf "${INTERPRETER_DIR}/${ZEP_INTP_JAR}" interpreter-setting.json
-    mv interpreter-setting.json interpreter-setting.json.orig
+    mv "${ZEP_INTP_JAR}" "${DIR}/"
+    # mv "${ZEP_INTP_JAR}" "${INTERPRETER_DIR}"
+
+#    jar -xf "${INTERPRETER_DIR}/${ZEP_INTP_JAR}" interpreter-setting.json
+#    mv interpreter-setting.json interpreter-setting.json.orig
 
     # Place interpreter dependencies into the directory
-    cp -a "${DIR}/jars/." "${INTERPRETER_DIR}"
-    cp interpreter-setting.json.orig "${INTERPRETER_DIR}"/interpreter-setting.json
+    # cp -a "${DIR}/jars/." "${INTERPRETER_DIR}"
+#    cp interpreter-setting.json.orig "${INTERPRETER_DIR}"/interpreter-setting.json
   
+    # Modify conf/zeppelin-site.xml to include classnames of snappydata interpreters.
+#    if [[ ! -e "${Z_DIR}/conf/zeppelin-site.xml" ]]; then
+    cp "${Z_DIR}/conf/zeppelin-site.xml.template" "${Z_DIR}/conf/zeppelin-site.xml"
+    SEARCH_STRING="<name>zeppelin.interpreters<\/name>"
+    INSERT_STRING="org.apache.zeppelin.interpreter.SnappyDataZeppelinInterpreter,org.apache.zeppelin.interpreter.SnappyDataSqlZeppelinInterpreter,"
+    sed -i "/${SEARCH_STRING}/{n;s/<value>/<value>${INSERT_STRING}/}" "${Z_DIR}/conf/zeppelin-site.xml"
+#    fi
     # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
+
     # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
     # start zeppelin server
+    "${Z_DIR}/bin/zeppelin-daemon.sh start"
 }
 # ============================================================================================================
 # MAIN
