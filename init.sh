@@ -123,9 +123,19 @@ create_internal_ip_file()
 
 launch_zeppelin()
 {
+    ZEP_VERSION="0.7.3"
+    ZEP_DIR="zeppelin-${ZEP_VERSION}-bin-netinst"
+    ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VERSION}/${ZEP_DIR}.tgz"
+    ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
+    ZEP_NOTEBOOKS_DIR="notebook"
+    PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
+
+    wget -q "${ZEP_URL_MIRROR}"
+    tar -xf "${ZEP_DIR}.tgz"
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
     # download zeppelin interpreter 0.7.3.4 for snappydata
     # download pre-created sample notebooks for snappydata
+    wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
     # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
     # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
     # start zeppelin server

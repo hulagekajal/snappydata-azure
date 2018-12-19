@@ -1,0 +1,148 @@
+diff --git init.sh init.sh
+index dc2043f..57e6c73 100644
+--- init.sh
++++ init.sh
+@@ -147,43 +147,41 @@ cd ${DIR}
+ # wget --tries 10 --retry-connrefused --waitretry 15 https://sdtests.blob.core.windows.net/testdata/zeppelin.tgz
+ 
+ # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
+-LOCATOR2HOSTNAME="${CLUSTERNAME}-locator2"
+ 
+-if [ "$NODETYPE" == "locator" ]; then
+-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+-    mkdir -p /opt/snappydata/work/locator
+-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
++# Below if block derives name of other locator from this locator. Assumes there are only two locators.
++OTHER_LOCATOR=""
++if [ "$LOCATORNODECOUNT" == "2" ]; then
++  echo ${LOCATORHOSTNAME} | grep '1$'
++  if [ echo $? == 0 ]; then
++    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
++  elif
++    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
++  fi
+ fi
+ 
+-if [ "$NODETYPE" == "locator" && "$LOCATORNODECOUNT" == "2" ]; then
++if [ "$NODETYPE" == "locator" ]; then
+     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+     mkdir -p /opt/snappydata/work/locator
+-    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
++    if [ ${OTHER_LOCATOR} != "" ]; then
++      OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
++    fi
++    ${DIR}/bin/snappy locator start -peer-discovery-address=`hostname` ${OTHER_LOCATOR} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}
+ fi
+ 
+-
+-if [ "$NODETYPE" == "datastore" ]; then
+-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+-    mkdir -p /opt/snappydata/work/datastore
+-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
++if [ ${OTHER_LOCATOR} != "" ]; then
++    OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
+ fi
+ 
+-if [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
++if [ "$NODETYPE" == "datastore" ]; then
+     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+     mkdir -p /opt/snappydata/work/datastore
+-    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
++    ${DIR}/bin/snappy server start -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}
+ fi
+ 
+ if [ "$NODETYPE" == "lead" ]; then
+     chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+     mkdir -p /opt/snappydata/work/lead
+-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
+-fi
+-
+-if [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
+-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
+-    mkdir -p /opt/snappydata/work/lead
+-    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334,${LOCATOR2HOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
++    ${DIR}/bin/snappy leader start -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}
+ fi
+ # ---------------------------------------------------------------------------------------------
+ 
+diff --git mainTemplate.json mainTemplate.json
+index aeb1090..b07c607 100644
+--- mainTemplate.json
++++ mainTemplate.json
+@@ -97,7 +97,7 @@
+         "description": "VM size"
+       }
+     },
+-  "locatorNodeCount": {
++    "locatorNodeCount": {
+       "type": "int",
+       "defaultValue": 1,
+       "allowedValues": [ 1, 2 ],
+@@ -105,7 +105,7 @@
+         "description": "The number of virtual machines instances to provision for the locator nodes"
+       }
+     },
+-	"leadAndDataStoreVmSize":{
++    "leadAndDataStoreVmSize":{
+       "type": "string",
+       "defaultValue": "Standard_D3",
+       "allowedValues": [
+@@ -146,8 +146,7 @@
+       "metadata": {
+         "description": "VM size"
+       }
+-    
+-},
++    },
+     "dataStoreNodeCount": {
+       "type": "int",
+       "defaultValue": 1,
+@@ -567,7 +566,7 @@
+       "properties": {
+       }
+     },
+-   {
++    {
+       "apiVersion": "[variables('apiVersions').network.networkInterfaces]",
+       "type": "Microsoft.Network/networkInterfaces",
+       "name": "[concat(variables('locatorNicName'),copyIndex(1))]",
+@@ -576,7 +575,7 @@
+         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+ 		"[concat('Microsoft.Network/publicIPAddresses/', concat(variables('locatorPublicIPName'),copyIndex(1)))]"
+       ],
+-	  "copy": {
++        "copy": {
+         "name": "locatorNicsCopy",
+         "count": "[parameters('locatorNodeCount')]"
+       },
+@@ -597,8 +596,8 @@
+           }
+         ]
+       }
+-	 }, 
+-    { 
++    },
++    {
+       "apiVersion": "[variables('apiVersions').compute.virtualMachines]",
+       "type": "Microsoft.Compute/virtualMachines",
+       "name": "[concat(variables('locatorVmName'),copyIndex(1))]",
+@@ -662,9 +661,8 @@
+           ]
+         }
+       }
+-
+-  },  
+-{                
++    },
++    {
+       "apiVersion": "[variables('apiVersions').compute.virtualMachineExtensions]",
+       "type": "Microsoft.Compute/virtualMachines/extensions",
+       "name": "[concat(concat(variables('LocatorVmName'),copyIndex(1)), '/init')]",
+@@ -687,7 +685,6 @@
+           "commandToExecute": "[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', variables('subnetDataStartAddress'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),copyIndex(1)), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n', parameters('locatorNodeCount'), ' -f ', parameters('confForLocator'), ' -k ', parameters('clusterName'))]"
+         }
+       }
+-
+     },
+ 
+     {             

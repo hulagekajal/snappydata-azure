@@ -1,0 +1,610 @@
+commit 12655daac0f479b515cd12da5e21f8cdfbe24c23
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Dec 7 14:53:56 2018 +0530
+
+    Restored the changes
+
+commit 2a165166546a0c23b7828060f4dc8f645388788d
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Dec 7 14:44:14 2018 +0530
+
+    Removed Outputs
+
+commit 621645fd37ceb4d06a5be0d6efe1e57e6d6df0ec
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Dec 7 14:25:30 2018 +0530
+
+    Removed Outputs
+
+commit f7711afd8f340c9a2d2a85e5f87f3b4490a2fb76
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Dec 7 14:15:33 2018 +0530
+
+    Syntax Error for outputs is resolved
+
+commit 90b37bed4f12a132e12c0bd4c5af98cca10dfacf
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Dec 7 13:05:35 2018 +0530
+
+    updated Security rules. changed private IPs of leads to 10.0.2.6 and 7. Added dependencies for lead and servers VM. Added output with copy
+
+commit f67e88353789208f76a1113955058a60f199ba27
+Author: Kajal Hulage <kajal.hulage15@vit.edu>
+Date:   Thu Dec 6 17:54:07 2018 +0530
+
+    * Using sbin scripts to launch cluster process instead of bin/snappy.
+    * Added a whitespace between params to init.sh
+    * Not sending clustername as a param to init.sh
+
+commit 963fe404c1350bfbf0e45c989283ef18a2358139
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 17:00:11 2018 +0530
+
+    * Corrected if expression syntax.
+
+commit 5bca8e1d0f13dbe88eb3c4ef2ef0ffc89573a4a7
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 16:28:04 2018 +0530
+
+    * Corrected if..else..fi syntax.
+
+commit dd9cc3870815706db3d497eb3f9f5ca1b6b52534
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 16:10:30 2018 +0530
+
+    * Corrected command paramateres for cluster with two locators/leads.
+
+commit 6e8d5e66be1a2e7625962da72126f7e8b8d05146
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 14:36:27 2018 +0530
+
+    clustername and if blocks for locator2 added
+
+commit 3f39fbfe02c4456fad5149e94cd549d8a04dffba
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 13:15:44 2018 +0530
+
+    clustername and if blocks for locator2 removed
+
+commit eede431290816180e7935c9da21373da67c40827
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Dec 6 12:47:40 2018 +0530
+
+    conf + clustername in init
+
+commit 8e4f07295d959684e4747050c280457149042a6a
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Dec 5 11:22:07 2018 +0530
+
+    changes commited
+
+commit 45a16b244c3fdf22d03b69608a68c50f86ff986c
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 16:01:35 2018 +0530
+
+    Security rules updated
+
+commit ba66c747725e188d4a72a250f457e91ca7975225
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 15:56:59 2018 +0530
+
+    Security rules updated
+
+commit 91fd096fe1419c716ed067583625e429e6c2a764
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 15:48:41 2018 +0530
+
+    Security rules updated
+
+commit fa437bfc94975b83a0cbd4473ff0ecb557f47863
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 12:43:58 2018 +0530
+
+    Deployment Block Removed
+
+commit b227bd6892e3abe65f1a1c364468c5adb2ef8e37
+Merge: a713a0f afacabb
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 12:22:05 2018 +0530
+
+    Merge branch 'script-improvments-1' of https://github.com/hulagekajal/snappydata-azure into script-improvments-1
+
+commit a713a0ff9057bfde7fdf85d10e401c28ac8832b2
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Thu Nov 29 12:21:21 2018 +0530
+
+    removed copy from deployments
+
+commit afacabb8f68207a12cedd47ca438a9a540634428
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 29 11:57:58 2018 +0530
+
+    Update start_snappydata.sh
+
+commit fca1390f97dd033fdc8ec5c92070025509bebf29
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 15:29:36 2018 +0530
+
+    updated maintemplate
+
+commit 79bcb755b0547f1fb7d0eb365a235740e6e1727d
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 14:52:15 2018 +0530
+
+    trial
+
+commit 78d739da86c3d22d0a726f43304f379e2fbdac97
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 14:43:07 2018 +0530
+
+    trial
+
+commit 4d47cdc0f843b4a37bef2b2e3c77fb9ef787637c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Wed Nov 28 14:27:24 2018 +0530
+
+    Update mainTemplate.json
+
+commit 15a4ab3c0eac734a6e080b93551f93cdbc5e861b
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 14:24:59 2018 +0530
+
+    updated domainNameLabel String
+
+commit e46d3664ff730efb3e024d23f882a164517fb4b6
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 13:14:41 2018 +0530
+
+    updated mainTemplate.json with public IPs of DataStore
+
+commit 2b3e66e08a0bb9167517fff996ea9f21bb705345
+Merge: d19df9e 8ed8279
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Wed Nov 28 12:41:23 2018 +0530
+
+    Merge branch 'script-improvments-1' of https://github.com/hulagekajal/snappydata-azure into script-improvments-1
+
+commit 8ed82795827846fd4f97848626297a07153a3d1c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Wed Nov 28 12:38:55 2018 +0530
+
+    Update mainTemplate.json
+
+commit b325793c0f771663afa81265bcb4c3a07a2721e2
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Wed Nov 28 12:35:27 2018 +0530
+
+    Update mainTemplate.json
+
+commit 8214cef39e27a9f26692a0b19e4a9cf41e776346
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Wed Nov 28 11:58:53 2018 +0530
+
+    Update mainTemplate.json
+
+commit dd614e0837f61fe52122c65ec264427fbbfcfd25
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Wed Nov 28 11:56:03 2018 +0530
+
+    Update init.sh
+
+commit d19df9e2de5dab5e340f6570c889d3ca85ef4ff5
+Merge: 4027ce5 2ff78df
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Mon Nov 26 14:53:28 2018 +0530
+
+    Merge branch 'script-improvments-1' of https://github.com/hulagekajal/snappydata-azure into script-improvments-1
+
+commit 2ff78df5200375459d8453f120a8cbc24efb3df1
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 26 14:42:38 2018 +0530
+
+    Update mainTemplate.json
+
+commit 40cdbee96aeba9a9be9a3302e4f9e17e79853a8c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 26 13:25:51 2018 +0530
+
+    Update mainTemplate.json
+
+commit efa2e64532ee90c920ed133671d1cc9bca2d0e2f
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 26 13:20:31 2018 +0530
+
+    Update mainTemplate.json
+
+commit 88883c434339847c57e8cb33f650105f7dad055b
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 26 13:19:14 2018 +0530
+
+    Update mainTemplate.json
+
+commit 2aa47ff4702cfb97bc6454a72bce24971e2084ac
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 26 13:16:19 2018 +0530
+
+    Update mainTemplate.json
+
+commit 9f812d31b298273023824c1f42b8aef4f2b651ca
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 17:10:53 2018 +0530
+
+    Update mainTemplate.json
+
+commit 20f7a5dd43bc3d6638016cdd16988fca1a968247
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 17:01:59 2018 +0530
+
+    Update mainTemplate.json
+
+commit 2325f55551fc9149aa9451308613bde7816f2fd5
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:56:39 2018 +0530
+
+    Update mainTemplate.json
+
+commit 183180b74a9bc8792718ec54a429e0b59b55152f
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:42:27 2018 +0530
+
+    Update mainTemplate.json
+
+commit 9bd3b6cb4809cc1b8686f5848761af074849faf2
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:38:02 2018 +0530
+
+    Update mainTemplate.json
+
+commit 6de2e3cef65237596ab6308217d33311c821c154
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:16:08 2018 +0530
+
+    Update mainTemplate.json
+
+commit 56179af01bbfa203183baabcbedf954c0ec16392
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:10:46 2018 +0530
+
+    Update mainTemplate.json
+
+commit b883ec034908c8603d2fa5e49d35f18e05104823
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:08:31 2018 +0530
+
+    Update mainTemplate.json
+
+commit 88cd4ee42da98468562eb0b730c5ea9a774c3019
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 16:02:00 2018 +0530
+
+    Update mainTemplate.json
+
+commit 67778344e1d1e6c2a908498f41110efdd1052b53
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 15:49:13 2018 +0530
+
+    Update mainTemplate.json
+
+commit 500314bc6ac3345a62adc4422da347aff2617f7d
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 15:20:22 2018 +0530
+
+    Update mainTemplate.json
+
+commit 84cede01f4411eef5786608be1b1814b4a55bb0c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 15:16:48 2018 +0530
+
+    Update mainTemplate.json
+
+commit ce3743f9d458331487ed1eb5e82b0bcf1a285ad4
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:35:29 2018 +0530
+
+    Update mainTemplate.json
+
+commit 315294dd23bf2dc02bfcd909c3435aa835ac9482
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:30:33 2018 +0530
+
+    Update mainTemplate.json
+
+commit c7f9d930027ad02c6a4d4f187ba146aa23034cd4
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:27:28 2018 +0530
+
+    Update mainTemplate.json
+
+commit f119c38d37bfeda776b99a786e30011518198166
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:19:51 2018 +0530
+
+    Update mainTemplate.json
+
+commit 1d58399234d13740a102cf730c0e259f53c4c786
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:17:52 2018 +0530
+
+    Update mainTemplate.json
+
+commit 1a2b5c5ce5881d401dcff7c9d58908e99f07a71c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 12:13:18 2018 +0530
+
+    Update mainTemplate.json
+
+commit 0d3cd3ec4e8ced6a787f55999636cba35d5ac8c9
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 23 11:47:46 2018 +0530
+
+    Update mainTemplate.json
+
+commit d057e07f561ff3c0327d6bfe07bf484e4d12290a
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:48:54 2018 +0530
+
+    Update mainTemplate.json
+
+commit e79aea33bbe3b5e089cacb01efdd30344a7c37d6
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:32:50 2018 +0530
+
+    Update mainTemplate.json
+
+commit daaf7823e51743e6965b8910ad55aa00a9050f21
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:17:46 2018 +0530
+
+    Update mainTemplate.json
+
+commit a44cfc96d43444edfb321cde5aec5fbf9ab1f9a1
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:16:05 2018 +0530
+
+    Update mainTemplate.json
+
+commit 18bbc751da6e7a3936ea5efa6ff9d96813749bd8
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:12:33 2018 +0530
+
+    Update mainTemplate.json
+
+commit d3f89f5fa8be7dcfef6e8394f816b4ea3b9548f7
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:11:16 2018 +0530
+
+    Update mainTemplate.json
+
+commit 658d7bcd001830a8d9cf8366b94a23b68a50918d
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 15:08:51 2018 +0530
+
+    Update mainTemplate.json
+
+commit 710e1f282508d09bf7819345c539dc6fcddecf86
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 14:43:25 2018 +0530
+
+    Update mainTemplate.json
+
+commit 954be76c83fe870754fb60c97d5bfea7e95b937c
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 14:40:53 2018 +0530
+
+    Update mainTemplate.json
+
+commit cbbc82fe236e0b5f973014bafa225c58c5e3e9be
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 14:27:50 2018 +0530
+
+    Update mainTemplate.json
+
+commit a493f12efe9764eb6c15d8e4faa77e79861447ed
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 14:19:43 2018 +0530
+
+    Update mainTemplate.json
+
+commit a3999f345307ee6a555a88ae789950d2c277e23b
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 13:11:32 2018 +0530
+
+    Update mainTemplate.json
+
+commit cf863bdeb733708bb5b75a69ddcfa3e02e58b494
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 12:57:44 2018 +0530
+
+    Update mainTemplate.json
+
+commit dab4cc0e8e4a8e9de1dcfd97b91cbc2b769cbc96
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Thu Nov 22 12:33:33 2018 +0530
+
+    Update mainTemplate.json
+
+commit 48a63fdd1121cadbbeadd14e824ff7c7831609b0
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 20 14:10:18 2018 +0530
+
+    Update mainTemplate.json
+
+commit 1485a4a4ef1b26ae63b250c2fa47201bcbe9b738
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 20 14:06:25 2018 +0530
+
+    Update mainTemplate.json
+
+commit 3f7afa09027377a2726b2da071aecef0f34d2dfb
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 20 14:03:13 2018 +0530
+
+    Update mainTemplate.json
+
+commit 4027ce5057f1206083e48c1e533c241c458ad8d9
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Mon Nov 19 16:25:56 2018 +0530
+
+    Done with lead and locator allotment
+
+commit 6adcef19ba15e69747c8f95f7cac8e21771212af
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Mon Nov 19 16:01:53 2018 +0530
+
+    Update mainTemplate.json
+
+commit 99d81ab92fb7eab997faf96b79eafbdf98c05570
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Fri Nov 16 17:40:51 2018 +0530
+
+    Update mainTemplate.json
+
+commit c1869853c950e80ddebb49456221757059ffbf12
+Author: Soubhik Chakraborty <soubhikc@vmware.com>
+Date:   Fri Nov 16 16:20:36 2018 +0530
+
+    * Use same VM size for leads and servers.
+
+commit 9650dad82b7736a1ae74b29a95910b1bb7a201e2
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 13 16:23:34 2018 +0530
+
+    Update mainTemplate.json
+
+commit be0fa342ed71ca19511600ad1e63dfaeacee1505
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 13 15:36:56 2018 +0530
+
+    Update init.sh
+
+commit 34ad211973f2b0d82d563d563240c8790dc80975
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 6 17:13:35 2018 +0530
+
+    Update init.sh
+
+commit f5b863756fd46562f7a3fcf139c81feb28682e97
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 6 17:09:01 2018 +0530
+
+    Update mainTemplate.json
+
+commit f5967878bfee29883a2a907e10b787ab33dd1255
+Author: hulagekajal <40796208+hulagekajal@users.noreply.github.com>
+Date:   Tue Nov 6 17:04:29 2018 +0530
+
+    Update mainTemplate.json
+
+commit ffa99ed7ef4997a263f9ac2b4de196a832b59bf9
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 16:10:17 2016 -0500
+
+    Make lead1 start before lead2
+
+commit 6457c9547f85dbae7733f4a9a318c53c0b93fd9b
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 15:52:22 2016 -0500
+
+    Add dependency for lead2
+
+commit 047d9d0c206147b529c487ec907416775acd01c9
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 15:24:07 2016 -0500
+
+    Fix locator host parameters to the start scripts
+
+commit ebb07cef7d8915719063b5bf6674276ce1e355cb
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 15:13:14 2016 -0500
+
+    Fix dependsOn extensions
+
+commit 353e52cf9be5bd613e19f128e32aa884f98c1847
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 15:05:13 2016 -0500
+
+    Public IPs for leads, start services via init.sh
+
+commit b47a0abd6229c823b95318ee2402936fb23b3629
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Fri Jul 8 13:52:40 2016 -0500
+
+    Download stuff from storage
+
+commit c9b33f1b6483a9370b11386739484bb9befa70d4
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 22:31:30 2016 -0500
+
+    lead1 instead of lead
+
+commit a14053757beeaf201c310eae943f8b57b637a0fd
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 22:27:56 2016 -0500
+
+    lead instead of leader
+
+commit fb5925219f1737b5245c805e0f804fe1e5d2f830
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 21:22:53 2016 -0500
+
+    Use account count
+
+commit 47d723c5ea71fa29abbaed8b93714f19bbbaf541
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 21:18:59 2016 -0500
+
+    Do not create too many storage accounts
+
+commit 57cae7908940f25d6ac7e1e6b28e586ae669a5a1
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 21:03:08 2016 -0500
+
+    Include DNS name prefix parameter in domain name
+
+commit 797e6612452f2c1ee8c29716072d59f41708606a
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 21:01:34 2016 -0500
+
+    Improve public IP domain name label
+
+commit 32e0c5f5976d67ed230b3c4276f409f546dd1c1b
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 20:57:15 2016 -0500
+
+    Update init.sh
+
+commit 2b00eac5383931f4439174b0edd615b2f2578c2d
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 19:24:14 2016 -0500
+
+    Fix
+
+commit 794fab20b7d2d60686005cd73383ac970cb01cdb
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 19:22:56 2016 -0500
+
+    Update instructions
+
+commit 5f386a32a16f01c4eedb33682e82d0eb191df9cd
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 19:16:57 2016 -0500
+
+    Fix
+
+commit 89c345b4b275c2216bcc39b23921ba9fbeedf3f4
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 18:22:51 2016 -0500
+
+    Fix errors
+
+commit e4dc4eacea6e1243ac88d01bf169de3e04f01793
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 18:03:39 2016 -0500
+
+    Reference artifacts base URL
+
+commit f43f077165247d6ef81fd524cc89e4560ba1a560
+Author: Arsen Vladimirskiy <arsenvlad@users.noreply.github.com>
+Date:   Thu Jul 7 18:01:28 2016 -0500
+
+    Initial commit
