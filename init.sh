@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:i:s:c:l:u:a:n:z:f" opt; do
+while getopts "t:i:s:c:l:u:a:n:z:f:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -128,16 +128,37 @@ launch_zeppelin()
     ZEP_VERSION="0.7.3"
     ZEP_DIR="zeppelin-${ZEP_VERSION}-bin-netinst"
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VERSION}/${ZEP_DIR}.tgz"
-    #ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
-    #ZEP_NOTEBOOKS_DIR="notebook"
-    #PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
+    ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
+    ZEP_NOTEBOOKS_DIR="notebook"
+    PUBLIC_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
 
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
     wget -q "${ZEP_URL_MIRROR}"
     tar -xf "${ZEP_DIR}.tgz" --directory ${Z_DIR} --strip 1 
+    
+    # download pre-created sample notebooks for snappydata
+    wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
+    tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
+    find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
 
+    echo "Copying sample notebooks..."
+    cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${ZEP_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+ 
+    # download zeppelin interpreter 0.7.3.4 for snappydata
+    ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
+    INTERPRETER_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/releases/download/v0.7.3.4/${ZEP_INTP_JAR}"
+    INTERPRETER_DIR="${ZEP_DIR}/interpreter/snappydata"
+    mkdir -p "${INTERPRETER_DIR}"
+    wget -q "${INTERPRETER_URL}"
+    mv "${ZEP_INTP_JAR}" "${INTERPRETER_DIR}"
+    jar -xf "${INTERPRETER_DIR}/${ZEP_INTP_JAR}" interpreter-setting.json
+    mv interpreter-setting.json interpreter-setting.json.orig
+
+    # Place interpreter dependencies into the directory
+    cp -a "${DIR}/jars/." "${INTERPRETER_DIR}"
+    cp interpreter-setting.json.orig "${INTERPRETER_DIR}"/interpreter-setting.json
   
     # edit conf/zeppelin-site.xml (add our two interpreter classnames under 'interpreters' attribute.
     # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
@@ -202,7 +223,7 @@ if [ "$NODETYPE" == "datastore" ]; then
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
    if ("$LAUNCHZEPPELIN" == "yes"); then
-      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true ${CONFPARAMETERS}" > ${DIR}/conf/leads
+      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true -classpath=${DIR}/${ZEP_INTP_JAR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
       launch_zeppelin
    else
       echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
