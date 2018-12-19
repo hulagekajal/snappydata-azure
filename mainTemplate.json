@@ -183,10 +183,10 @@
     },
     "launchZeppelin":{
       "type":"string",
-      "defaultValue":"No",
+      "defaultValue":"no",
       "allowedValues":[
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "metadata":{
         "description":"Start Zeppelin"
