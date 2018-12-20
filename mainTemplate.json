@@ -963,14 +963,19 @@
       }
     }
   ],
-  "outputs":{  
-    "locator1PublicIP":{  
+  
+  "outputs":{
+    "SnappyData Dashboard":{
       "type":"string",
-      "value":"[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn)]"
+      "value":"[concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),'1'))).dnsSettings.fqdn, ':5050')]"
     },
-    "lead1PublicIP":{  
+    "Connect via snappy shell":{
       "type":"string",
-      "value":"[concat(concat('You can Access Snappydata Dashboard on : ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),'1'))).dnsSettings.fqdn)),':5050')]"
+      "value":"[concat('connect client ', variables('singleQuote'), reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn, ':1527', variables('singleQuote'), ';')]"
+    },
+    "SnappyData JDBC url":{
+      "type":"string",
+      "value":"[concat('jdbc:snappydata://', reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),'1'))).dnsSettings.fqdn, ':1527')]"
     }
   }
 }
