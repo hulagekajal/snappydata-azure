@@ -135,7 +135,8 @@ launch_zeppelin()
     mkdir -p ${Z_DIR}
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
    
-    # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
+   
+ # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
     echo "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
     wget -q "${ZEP_URL_MIRROR}"
     tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
