@@ -236,7 +236,7 @@ if [ "$NODETYPE" == "datastore" ]; then
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
    if [ "$LAUNCHZEPPELIN" == "yes" ]; then
-      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true -classpath=${DIR}/${ZEP_INTP_JAR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin-interpreter-enable=true -classpath=${DIR}/jars/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
       launch_zeppelin
    else
       echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
