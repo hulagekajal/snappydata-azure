@@ -35,8 +35,6 @@ while getopts "t:i:s:c:l:u:a:n:f:" opt; do
         ;;
 	f) CONFPARAMETERS=$OPTARG
         ;;
-        
-
     esac
     done
 
@@ -157,47 +155,33 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
-
-
-if [ "$NODETYPE" == "locator" && "$LOCATORNODECOUNT" == "2" ]; then
-    echo ${LOCATORHOSTNAME} | grep '1$'
-    if [ $? == 0 ]; then
+OTHER_LOCATOR=""
+if [ "${LOCATORNODECOUNT}" == "2" ]; then
+  echo ${LOCATORHOSTNAME} | grep '1$'
+  if [ $? == 0 ]; then
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-    else
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/2$/1/g'`
-    fi
+  fi
+fi
+if [ "$NODETYPE" == "locator" ]; then
+  if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} ${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
-    ${DIR}/sbin/snappy-locators.sh start
-else
-    if ["$NODETYPE" == "locator"];then
-    echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP}  -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${CONFPARAMETERS}" > ${DIR}/conf/locators 
-    ${DIR}/sbin/snappy-locators.sh start
-    fi
+  fi
+  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  ${DIR}/sbin/snappy-locators.sh start
 fi
 
-
-if  [ "$NODETYPE" == "datastore" && "$LOCATORNODECOUNT" == "2" ]; then
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
-    ${DIR}/sbin/snappy-servers.sh start
-else
-    if [ "$NODETYPE" == "datastore"];then
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore ${CONFPARAMETERS}" > ${DIR}/conf/servers
-    ${DIR}/sbin/snappy-servers.sh start
-    fi
+if [ ${OTHER_LOCATOR} != "" ]; then
+  OTHER_LOCATOR=",${OTHER_LOCATOR}:10334"
 fi
 
-if  [ "$NODETYPE" == "lead" && "$LOCATORNODECOUNT" == "2" ]; then
-    OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
-    ${DIR}/sbin/snappy-leads.sh start
-else
-    if [ "$NODETYPE" == "lead"];then
-    echo "${LOCAL_IP} -locators=${LOCATORHOSTNAME}:10334 -dir=/opt/snappydata/work/lead ${CONFPARAMETERS}" > ${DIR}/conf/leads
-    ${DIR}/sbin/snappy-leads.sh start
-    fi
+if [ "$NODETYPE" == "datastore" ]; then
+  echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  ${DIR}/sbin/snappy-servers.sh start
+elif [ "$NODETYPE" == "lead" ]; then
+  echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+  ${DIR}/sbin/snappy-leads.sh start
 fi
+
 # ---------------------------------------------------------------------------------------------
 
 
