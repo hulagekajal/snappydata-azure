@@ -125,7 +125,7 @@ create_internal_ip_file()
 
 launch_zeppelin()
 {
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
+    
 
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
@@ -133,11 +133,12 @@ launch_zeppelin()
     PUBLIC_HOSTNAME="${PUBLIC_IP}" 
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
-
+    chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
+   
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
     echo "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
     wget -q "${ZEP_URL_MIRROR}"
-    tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR}
+    tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
     
     # download pre-created sample notebooks for snappydata
     echo "Downloading Zeppelin notebooks from ${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz ..."
