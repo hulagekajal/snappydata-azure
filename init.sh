@@ -21,7 +21,7 @@ while getopts "t:i:s:c:l:u:a:n:f:" opt; do
         ;;
         i) LOCALIP=$OPTARG
         ;;
-        s) STARTADDRESS=$OPTARG
+        s) PUBLICIP=$OPTARG
         ;;
         c) DATASTORENODECOUNT=$OPTARG
         ;;
@@ -78,10 +78,6 @@ if [[ -z ${LOCALIP} ]]; then
     fatal "No local IP -i specified, can't proceed."
 fi
 
-if [[ -z ${STARTADDRESS} ]]; then
-    fatal "No start address -s specified, can't proceed."
-fi
-
 if [[ -z ${DATASTORENODECOUNT} ]]; then
     fatal "No datastore count -c specified, can't proceed."
 fi
@@ -103,23 +99,10 @@ if [[ -z ${LOCATORNODECOUNT} ]]; then
 fi
 
 
-log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP STARTADDRESS=$STARTADDRESS DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
+log "init.sh NOW=$NOW NODETYPE=$NODETYPE LOCALIP=$LOCALIP DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
 # Just a helper method example in case it is convenient to get all IPs into a file by doing some math on the starting IP and the count of data store nodes
-create_internal_ip_file()
-{
-    # Generate IP addresses of the nodes based on the convention of locator1, leader1, data stores
-    IFS='.' read -r -a startaddress_parts <<< "$STARTADDRESS"
-    for (( c=0; c<4+$DATASTORENODECOUNT; c++ ))
-    do
-        octet1=${startaddress_parts[0]}
-        octet2=${startaddress_parts[1]}
-        octet3=$(( ${startaddress_parts[2]} + $(( $((${startaddress_parts[3]} + c)) / 256 )) ))
-        octet4=$(( $(( ${startaddress_parts[3]} + c )) % 256 ))
-        ip=$octet1"."$octet2"."$octet3"."$octet4
-        echo $ip
-    done > ${INTERNAL_IP_FILE}
-}
+
 
 # ============================================================================================================
 # MAIN
@@ -145,8 +128,7 @@ cd ${DIR}
 
 # The start of services in proper order takes place based on dependsOn within the template: locators, data stores, leaders
 LOCAL_IP=`hostname -I`
-PUBLIC_IP=`curl ifconfig.co`
-HOST_NAME=`hostname`
+
 
 
 # Setup passwordless ssh
@@ -158,7 +140,6 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
 OTHER_LOCATOR=""
-NEW_LEAD=""
 if [ "${LOCATORNODECOUNT}" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ $? == 0 ]; then
@@ -169,7 +150,7 @@ if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
   fi
-  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
   ${DIR}/sbin/snappy-locators.sh start
 fi
 
@@ -178,13 +159,9 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-  echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-   NEW_LEAD=`echo ${LOCATORHOSTNAME} | sed 's/locator1/lead2/g'`
-   if [${HOST_NAME} == ${NEW_LEAD} ];then
-   sleep 5
-   fi
   echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   ${DIR}/sbin/snappy-leads.sh start
 fi
