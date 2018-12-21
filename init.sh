@@ -147,7 +147,7 @@ cd ${DIR}
 LOCAL_IP=`hostname -I`
 PUBLIC_IP=`curl ifconfig.co`
 HOST_NAME=`hostname`
-NEW_LEAD=`echo ${LOCATORHOSTNAME} | sed 's/locator1/lead2/g'`
+
 
 # Setup passwordless ssh
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
@@ -158,6 +158,7 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
 OTHER_LOCATOR=""
+NEW_LEAD=""
 if [ "${LOCATORNODECOUNT}" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
   if [ $? == 0 ]; then
@@ -180,7 +181,8 @@ if [ "$NODETYPE" == "datastore" ]; then
   echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-   if [$HOST_NAME == $NEW_LEAD ];then
+   NEW_LEAD=`echo ${LOCATORHOSTNAME} | sed 's/locator1/lead2/g'`
+   if [${HOST_NAME} == ${NEW_LEAD} ];then
    sleep 5
    fi
   echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
