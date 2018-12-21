@@ -465,22 +465,8 @@
               "priority":104,
               "direction":"Inbound"
             }
-          },
-          {
-            "name":"snappy_rule",
-            "properties":{
-              "description":"Allow HTTP access",
-              "protocol":"Tcp",
-              "sourcePortRange":"*",
-              "destinationPortRange":"[if(equals(parameters('launchZeppelin'), 'yes'), '8080', '22')]",
-              "sourceAddressPrefix":"[parameters('allowedIPAddressPrefix')]",
-              "destinationAddressPrefix":"*",
-              "access":"Allow",
-              "priority":105,
-              "direction":"Inbound"
-            }
           }
-        ]
+       ]
       }
     },
     {
