@@ -19,7 +19,7 @@ while getopts "t:s:c:l:u:a:n:z:f:" opt; do
     case "$opt" in
         t) NODETYPE=$OPTARG
         ;;
-        s) PUBLIC_IP=$OPTARG
+        s) PUBLICIP=$OPTARG
         ;;
         c) DATASTORENODECOUNT=$OPTARG
         ;;
@@ -74,6 +74,10 @@ if [[ -z ${NODETYPE} ]]; then
     fatal "No node type -t specified, can't proceed."
 fi
 
+if [[ -z ${PUBLICIP} ]]; then
+    fatal "IP NOT GENERATED"
+fi
+
 if [[ -z ${DATASTORENODECOUNT} ]]; then
     fatal "No datastore count -c specified, can't proceed."
 fi
@@ -102,7 +106,7 @@ launch_zeppelin()
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
     ZEP_NOTEBOOKS_DIR="notebook"
-    PUBLIC_HOSTNAME="${PUBLIC_IP}" 
+    PUBLIC_HOSTNAME="${PUBLICIP}" 
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
@@ -202,7 +206,7 @@ if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
   fi
-  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
   ${DIR}/sbin/snappy-locators.sh start
 fi
 
@@ -211,7 +215,7 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-  echo "${LOCAL_IP} -hostname-for-clients=${PUBLIC_IP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
    if [ ${HOST_NAME} == ${NEW_LEAD}];then
