@@ -181,6 +181,17 @@
         "description":"The number of virtual machines instances to provision for the lead nodes"
       }
     },
+    "launchZeppelin":{
+      "type":"string",
+      "defaultValue":"no",
+      "allowedValues":[
+        "yes",
+        "no"
+      ],
+      "metadata":{
+        "description":"Start Zeppelin"
+      }
+    },
     "allowedIPAddressPrefix":{
       "type":"string",
       "defaultValue":"0.0.0.0/0",
@@ -465,8 +476,22 @@
               "priority":104,
               "direction":"Inbound"
             }
+          },
+          {
+            "name":"snappy_rule",
+            "properties":{
+              "description":"Allow HTTP access",
+              "protocol":"Tcp",
+              "sourcePortRange":"*",
+              "destinationPortRange":"[if(equals(parameters('launchZeppelin'), 'yes'), '8080', '22')]",
+              "sourceAddressPrefix":"[parameters('allowedIPAddressPrefix')]",
+              "destinationAddressPrefix":"*",
+              "access":"Allow",
+              "priority":105,
+              "direction":"Inbound"
+            }
           }
-       ]
+        ]
       }
     },
     {
@@ -681,7 +706,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t locator', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('locatorNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('locatorPublicIPName'),copyIndex(1)))).dnsSettings.fqdn), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t locator', ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
         }
       }
     },
@@ -805,7 +830,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh',' -t lead',' -i ', reference(resourceId('Microsoft.Network/networkInterfaces',concat(variables('leadNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('leadPublicIPName'),copyIndex(1)))).dnsSettings.fqdn),' -c ', parameters('dataStoreNodeCount'),' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t lead', ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
         }
       }
     },
@@ -945,7 +970,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -i ', reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataStoreNicName'),copyIndex(1)))).ipConfigurations[0].properties.privateIPAddress, ' -s ', concat(reference(resourceId('Microsoft.Network/publicIPAddresses',concat(variables('dataStorePublicIPName'),copyIndex(1)))).dnsSettings.fqdn), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
         }
       }
     }
@@ -965,6 +990,4 @@
     }
   }
 }
-
-
 
