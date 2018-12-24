@@ -14,10 +14,12 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:c:l:u:a:n:z:f:" opt; do
+while getopts "t:s:c:l:u:a:n:z:f:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
+        ;;
+        s) PUBLIC_IP=$OPTARG
         ;;
         c) DATASTORENODECOUNT=$OPTARG
         ;;
@@ -176,7 +178,6 @@ tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
 cd ${DIR}
 
 LOCAL_IP=`hostname -I`
-PUBLIC_IP=`curl ifconfig.co`
 HOST_NAME=`hostname`
 
 
