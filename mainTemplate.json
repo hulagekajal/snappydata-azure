@@ -970,7 +970,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -s ', concat(concat(variables('dnsNameForLocatorPublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -s ', concat(concat(variables('dnsNameForDataStorePublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
         }
       }
     }
