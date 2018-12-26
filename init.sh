@@ -218,16 +218,24 @@ if [ "$NODETYPE" == "datastore" ]; then
   echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-   if [ ${HOST_NAME} == ${NEW_LEAD} ];then
-     sleep 15
-   fi
-    if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${NEW_LEAD} ]; then
-      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
-      launch_zeppelin
-    else
-      echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
-    fi
-    ${DIR}/sbin/snappy-leads.sh start
+  if [ ${HOST_NAME} == ${NEW_LEAD} ];then
+    echo "show members;" > ${DIR}/showmembers.sql
+    LEAD_RUNNING=1
+    RETRIES=0
+    while $LEAD_RUNNING != 0 -a $RETRIES < 30; do
+      ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING
+      LEAD_RUNNING=$?
+      let RETRIES=RETRIES+1
+      sleep 2
+    done
+  fi
+  if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${NEW_LEAD} ]; then
+    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    launch_zeppelin
+  else
+    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+  fi
+  ${DIR}/sbin/snappy-leads.sh start
 fi
 
 # ---------------------------------------------------------------------------------------------
