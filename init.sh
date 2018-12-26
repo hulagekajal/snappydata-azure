@@ -162,6 +162,7 @@ launch_zeppelin()
 
     # Start zeppelin server
     ${Z_DIR}/bin/zeppelin-daemon.sh start
+    log "Started Apache Zeppelin server"
 }
 
 # ============================================================================================================
@@ -194,7 +195,7 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chown -R ${ADMINUSER}:${ADMINUSER} /opt/snappydata
 mkdir -p "/opt/snappydata/work/${NODETYPE}"
 OTHER_LOCATOR=""
-NEW_LEAD=`echo ${LOCATORHOSTNAME} | sed 's/locator1/lead2/g'`
+SECOND_LEAD=`echo ${LOCATORHOSTNAME} | sed 's/locator1/lead2/g'`
 
 if [ "${LOCATORNODECOUNT}" == "2" ]; then
   echo ${LOCATORHOSTNAME} | grep '1$'
@@ -218,18 +219,21 @@ if [ "$NODETYPE" == "datastore" ]; then
   echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
 elif [ "$NODETYPE" == "lead" ]; then
-  if [ ${HOST_NAME} == ${NEW_LEAD} ];then
+  if [ ${HOST_NAME} == ${SECOND_LEAD} ];then
     echo "show members;" > ${DIR}/showmembers.sql
     LEAD_RUNNING=1
     RETRIES=0
+    # Wait until lead1 becomes primary lead or 60 seconds elapse.
     while $LEAD_RUNNING != 0 -a $RETRIES < 30; do
-      ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING
+      timeout 5s ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep "primary lead" | grep RUNNING
+      # ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING  # applicable for 1.0.2
       LEAD_RUNNING=$?
       let RETRIES=RETRIES+1
       sleep 2
     done
+    log "Primary lead running: $LEAD_RUNNING"
   fi
-  if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${NEW_LEAD} ]; then
+  if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${SECOND_LEAD} ]; then
     echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
     launch_zeppelin
   else

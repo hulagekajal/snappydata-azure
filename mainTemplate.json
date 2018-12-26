@@ -196,7 +196,7 @@
       "type":"string",
       "defaultValue":"0.0.0.0/0",
       "metadata":{
-        "description":"The IP address range that can be used to SSH to the instances"
+        "description":"The IP address range that can be used to access the instances"
       }
     },
     "confForLead":{
