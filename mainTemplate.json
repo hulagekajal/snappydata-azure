@@ -816,8 +816,7 @@
       "dependsOn":[
         "locatorVmsCopy",
         "dataStoreInitExtensionsCopy",
-        "leadVmsCopy",
-        "[if(equals(concat(concat(variables('leadVmName'),copyIndex(1)), '/init'),concat(concat(variables('leadVmName'),'2'), '/init')), 'concat('Microsoft.Compute/virtualMachineExtensions/', concat(variables('leadVmName'),'1','/init'))', '')]"
+        "leadVmsCopy"
       ],
       "copy":{
         "name":"leadInitExtensionsCopy",
