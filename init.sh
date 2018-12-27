@@ -100,9 +100,6 @@ if [[ -z ${LOCATORNODECOUNT} ]]; then
     fatal "No locator count -n specified, can't proceed."
 fi
 
-if [[ -z ${SNAPPYDATADOWNLOADURL} ]]; then
-    fatal "No URL specified, can't proceed."
-fi
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
@@ -111,12 +108,12 @@ launch_zeppelin()
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
     ZEP_NOTEBOOKS_DIR="notebook"
-    PUBLIC_HOSTNAME="${PUBLICIP}" 
+    PUBLIC_HOSTNAME="${PUBLICIP}"
+    # TODO Do not download and extract if /opt/zeppelin already exists.
     export Z_DIR=/opt/zeppelin
     mkdir -p ${Z_DIR}
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
-   
-   
+
     # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
     log "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
     wget -q "${ZEP_URL_MIRROR}"
@@ -167,7 +164,7 @@ launch_zeppelin()
 
     # Start zeppelin server
     ${Z_DIR}/bin/zeppelin-daemon.sh start
-    log "Started Apache Zeppelin server"
+    log "Started Apache Zeppelin server."
 }
 
 # ============================================================================================================
@@ -176,20 +173,25 @@ launch_zeppelin()
 
 yum install -y java-1.8.0-openjdk
 
+# TODO Skip downloading snappydata distribution if /opt/snappydata already exists.
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
-SNAPPY_PACKAGE_NAME=`basename ${SNAPPYDATADOWNLOADURL}`
-SNAPPY_BACKUP_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
+# TODO Get the latest snappydata distribution, if SNAPPYDATADOWNLOADURL is empty.
+SNAPPY_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
 
-#To check if the URL provided is valid or not
-if curl --output /dev/null --silent --head --fail "$SNAPPYDATADOWNLOADURL"; then
-  SNAPPY_URL=${SNAPPYDATADOWNLOADURL}
-else
-  SNAPPY_URL=${SNAPPY_BACKUP_URL}
+if [[ ! -z ${SNAPPYDATADOWNLOADURL} ]]; then
+  # Check if the URL provided is valid or not.
+  if curl --output /dev/null --silent --head --fail "$SNAPPYDATADOWNLOADURL"; then
+    SNAPPY_URL=${SNAPPYDATADOWNLOADURL}
+  else
+    log "Provided url for custom build of snappydata not accessible. Exiting."
+    exit 10
+  fi
 fi
 
-# TODO Get the latest snappydata distribution
+SNAPPY_PACKAGE_NAME=`basename ${SNAPPY_URL}`
+
 wget -q --tries 10 --retry-connrefused --waitretry 15 ${SNAPPY_URL}
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
@@ -200,10 +202,11 @@ cd ${DIR}
 LOCAL_IP=`hostname -I`
 HOST_NAME=`hostname`
 
-
-# Setup passwordless ssh
-ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+# Setup passwordless ssh, if not already done.
+if [[ ! -f ~/.ssh/id_rsa ]]; then
+  ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''
+  cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+fi
 
 # Below if block derives name of other locator from this locator. Assumes there are only two locators.
 
@@ -218,12 +221,14 @@ if [ "${LOCATORNODECOUNT}" == "2" ]; then
     OTHER_LOCATOR=`echo ${LOCATORHOSTNAME} | sed 's/1$/2/g'`
   fi
 fi
+
 if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
   fi
   echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
   ${DIR}/sbin/snappy-locators.sh start
+  log "Started locator process."
 fi
 
 if [ ${OTHER_LOCATOR} != "" ]; then
@@ -233,6 +238,7 @@ fi
 if [ "$NODETYPE" == "datastore" ]; then
   echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
   ${DIR}/sbin/snappy-servers.sh start
+  log "Started server process."
 elif [ "$NODETYPE" == "lead" ]; then
   if [ ${HOST_NAME} == ${SECOND_LEAD} ];then
     echo "show members;" > ${DIR}/showmembers.sql
@@ -246,7 +252,7 @@ elif [ "$NODETYPE" == "lead" ]; then
       let RETRIES=RETRIES+1
       sleep 2
     done
-    log "Primary lead running: $LEAD_RUNNING"
+    log "Found primary lead running: $LEAD_RUNNING"
   fi
   if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${SECOND_LEAD} ]; then
     echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
@@ -255,6 +261,7 @@ elif [ "$NODETYPE" == "lead" ]; then
     echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   fi
   ${DIR}/sbin/snappy-leads.sh start
+  log "Started lead process."
 fi
 
 # ---------------------------------------------------------------------------------------------
