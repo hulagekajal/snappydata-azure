@@ -5,7 +5,6 @@
 
 log()
 {
-    echo "$1"
     logger "[SNAPPYDATA] $1"
 }
 
@@ -103,7 +102,7 @@ fi
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
-launch_zeppelin()
+install_zeppelin()
 {
     ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
@@ -162,10 +161,6 @@ launch_zeppelin()
       sed -i "/snappydatainc_marker/a \"host\": \"${LEAD_HOST}\",\n \"port\": \"${LEAD_PORT}\"," "${Z_DIR}/conf/interpreter.json"
       sed -i "s/snappydatainc_marker/true/" "${Z_DIR}/conf/interpreter.json"
     fi
-
-    # Start zeppelin server
-    ${Z_DIR}/bin/zeppelin-daemon.sh start
-    log "Started Apache Zeppelin server."
 }
 
 # ============================================================================================================
@@ -174,12 +169,9 @@ launch_zeppelin()
 
 yum install -y java-1.8.0-openjdk
 
-
 export DIR=/opt/snappydata
 
-
 # Get the latest snappydata distribution, if SNAPPYDATADOWNLOADURL is empty.
-
 SNAPPY_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
 if [[ ! -z ${SNAPPYDATADOWNLOADURL} ]]; then
   # Check if the URL provided is valid or not.
@@ -206,14 +198,15 @@ SNAPPY_PACKAGE_NAME=`basename ${SNAPPY_URL}`
 # Skip downloading snappydata distribution if /opt/snappydata already exists.
 if [[ ! -d ${DIR} ]]; then
   mkdir -p ${DIR}
-  echo "Downloading ${SNAPPY_URL}..."
+  log "Downloading ${SNAPPY_URL}..."
   wget -q --tries 10 --retry-connrefused --waitretry 15 ${SNAPPY_URL}
   if [[ $? -ne 0 ]]; then
-    echo "SnappyData distribution could not be downloaded successfully."
+    log "SnappyData distribution could not be downloaded successfully."
     exit 2
   fi
   # Extract the contents of the archive to /opt/snappydata directory without the top folder
   tar -zxf ${SNAPPY_PACKAGE_NAME} --directory ${DIR} --strip 1
+  log "Extracted SnappyData distribution to ${DIR}"
 fi
 
 cd ${DIR}
@@ -264,7 +257,8 @@ elif [ "$NODETYPE" == "lead" ]; then
     LEAD_RUNNING=1
     RETRIES=0
     # Wait until lead1 becomes primary lead or 60 seconds elapse.
-    while $LEAD_RUNNING != 0 -a $RETRIES < 90; do
+    log "Started the wait for lead1 to come up."
+    while $LEAD_RUNNING -ne 0 -a $RETRIES -lt 90; do
       timeout 5s ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep "primary lead" | grep RUNNING
       # ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING  # applicable for 1.0.2
       LEAD_RUNNING=$?
@@ -273,9 +267,16 @@ elif [ "$NODETYPE" == "lead" ]; then
     done
     log "Found primary lead running: $LEAD_RUNNING"
   fi
-  if [ "$LAUNCHZEPPELIN" == "yes" -a ${HOST_NAME} != ${SECOND_LEAD} ]; then
+
+  if [ "$LAUNCHZEPPELIN" == "yes" ]; then
     echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
-    launch_zeppelin
+    install_zeppelin
+
+    if [ ${HOST_NAME} != ${SECOND_LEAD} ]; then
+      # Start zeppelin server
+      ${Z_DIR}/bin/zeppelin-daemon.sh start
+      log "Started Apache Zeppelin server."
+    fi
   else
     echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   fi
