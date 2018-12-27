@@ -194,7 +194,7 @@ else
   URL_PART=`grep -o "/SnappyDataInc/snappydata/releases/download/[a-zA-Z0-9.\-]**/snappydata-[0-9.]**-bin.tar.gz" latest`
   GREP_RESULT=`echo $?`
   if [[ ${GREP_RESULT} != 0 ]]; then
-    echo "Did not find binaries for SNAPPYDATA_VERSION version. Using "`basename ${URL}`
+    log "Did not find latest distribution of SnappyData. Using ${SNAPPY_URL}"
   else
     SNAPPY_URL="https://github.com${URL_PART}"
   fi
@@ -264,7 +264,7 @@ elif [ "$NODETYPE" == "lead" ]; then
     LEAD_RUNNING=1
     RETRIES=0
     # Wait until lead1 becomes primary lead or 60 seconds elapse.
-    while $LEAD_RUNNING != 0 -a $RETRIES < 30; do
+    while $LEAD_RUNNING != 0 -a $RETRIES < 90; do
       timeout 5s ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep "primary lead" | grep RUNNING
       # ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING  # applicable for 1.0.2
       LEAD_RUNNING=$?

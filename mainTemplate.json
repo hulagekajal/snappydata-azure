@@ -224,7 +224,7 @@
       "type":"string",
       "defaultValue":"",
       "metadata":{
-        "description":"URL of Snappydata distribution to use."
+        "description":"URL of Snappydata distribution to use. Uses the latest release from GitHub, if not specified."
       }
     }
   },
