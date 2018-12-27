@@ -109,16 +109,17 @@ launch_zeppelin()
     ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
     ZEP_NOTEBOOKS_DIR="notebook"
     PUBLIC_HOSTNAME="${PUBLICIP}"
-    # TODO Do not download and extract if /opt/zeppelin already exists.
+    # Do not download and extract if /opt/zeppelin already exists.
     export Z_DIR=/opt/zeppelin
-    mkdir -p ${Z_DIR}
+    if [[ ! -d ${Z_DIR} ]]; then
+      mkdir -p ${Z_DIR}
+      log "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
+      # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
+      wget -q "${ZEP_URL_MIRROR}"
+      tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
+    fi
     chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
 
-    # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
-    log "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
-    wget -q "${ZEP_URL_MIRROR}"
-    tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
-    
     # download pre-created sample notebooks for snappydata
     log "Downloading Zeppelin notebooks from ${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz ..."
     wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
@@ -173,11 +174,11 @@ launch_zeppelin()
 
 yum install -y java-1.8.0-openjdk
 
-# TODO Skip downloading snappydata distribution if /opt/snappydata already exists.
-export DIR=/opt/snappydata
-mkdir -p ${DIR}
 
-# TODO Get the latest snappydata distribution, if SNAPPYDATADOWNLOADURL is empty.
+export DIR=/opt/snappydata
+
+
+# Get the latest snappydata distribution, if SNAPPYDATADOWNLOADURL is empty.
 
 SNAPPY_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
 if [[ ! -z ${SNAPPYDATADOWNLOADURL} ]]; then
@@ -202,10 +203,18 @@ fi
 
 SNAPPY_PACKAGE_NAME=`basename ${SNAPPY_URL}`
 
-wget -q --tries 10 --retry-connrefused --waitretry 15 ${SNAPPY_URL}
-
-# Extract the contents of the archive to /opt/snappydata directory without the top folder
-tar -zxf ${SNAPPY_PACKAGE_NAME} --directory ${DIR} --strip 1
+# Skip downloading snappydata distribution if /opt/snappydata already exists.
+if [[ ! -d ${DIR} ]]; then
+  mkdir -p ${DIR}
+  echo "Downloading ${SNAPPY_URL}..."
+  wget -q --tries 10 --retry-connrefused --waitretry 15 ${SNAPPY_URL}
+  if [[ $? -ne 0 ]]; then
+    echo "SnappyData distribution could not be downloaded successfully."
+    exit 2
+  fi
+  # Extract the contents of the archive to /opt/snappydata directory without the top folder
+  tar -zxf ${SNAPPY_PACKAGE_NAME} --directory ${DIR} --strip 1
+fi
 
 cd ${DIR}
 
