@@ -168,6 +168,7 @@ install_zeppelin()
 # ============================================================================================================
 
 yum install -y java-1.8.0-openjdk
+yum update -y curl
 
 export DIR=/opt/snappydata
 
