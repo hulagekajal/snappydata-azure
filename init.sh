@@ -14,7 +14,7 @@ log()
 NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
-while getopts "t:s:c:l:u:a:n:z:f:" opt; do
+while getopts "t:s:c:l:u:a:n:z:f:d:" opt; do
     log "Option $opt set with value (${OPTARG})"
     case "$opt" in
         t) NODETYPE=$OPTARG
@@ -34,6 +34,8 @@ while getopts "t:s:c:l:u:a:n:z:f:" opt; do
         z) LAUNCHZEPPELIN=$OPTARG
         ;;
         f) CONFPARAMETERS=$OPTARG
+        ;;
+        d) SNAPPYDATADOWNLOADURL=$OPTARG
         ;;
     esac
     done
@@ -98,6 +100,9 @@ if [[ -z ${LOCATORNODECOUNT} ]]; then
     fatal "No locator count -n specified, can't proceed."
 fi
 
+if [[ -z ${SNAPPYDATADOWNLOADURL} ]]; then
+    fatal "No URL specified, can't proceed."
+fi
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
@@ -174,11 +179,21 @@ yum install -y java-1.8.0-openjdk
 export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
+SNAPPY_PACKAGE_NAME=`basename ${SNAPPYDATADOWNLOADURL}`
+SNAPPY_BACKUP_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
+
+#To check if the URL provided is valid or not
+if curl --output /dev/null --silent --head --fail "$SNAPPYDATADOWNLOADURL"; then
+  SNAPPY_URL=${SNAPPYDATADOWNLOADURL}
+else
+  SNAPPY_URL=${SNAPPY_BACKUP_URL}
+fi
+
 # TODO Get the latest snappydata distribution
-wget -q --tries 10 --retry-connrefused --waitretry 15 https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz
+wget -q --tries 10 --retry-connrefused --waitretry 15 ${SNAPPY_URL}
 
 # Extract the contents of the archive to /opt/snappydata directory without the top folder
-tar -zxf snappydata-1.0.2.1-bin.tar.gz --directory ${DIR} --strip 1
+tar -zxf ${SNAPPY_PACKAGE_NAME} --directory ${DIR} --strip 1
 
 cd ${DIR}
 

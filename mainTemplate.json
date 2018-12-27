@@ -219,6 +219,13 @@
       "metadata":{
         "description":"Configuration Parameters for DataStore"
       }
+    },
+    "snappydataDownloadURL":{
+      "type":"string",
+      "defaultValue":"",
+      "metadata":{
+        "description":"URL to Download Snappydata"
+      }
     }
   },
   "variables":{
@@ -706,7 +713,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t locator', ' -s ', concat(concat(variables('dnsNameForLocatorPublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t locator', ' -s ', concat(concat(variables('dnsNameForLocatorPublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'), ' -d ', parameters('snappydataDownloadURL'))]"
         }
       }
     },
@@ -830,7 +837,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t lead', ' -s ', concat(concat(variables('dnsNameForLeadPublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t lead', ' -s ', concat(concat(variables('dnsNameForLeadPublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ', concat(variables('locatorVmName'),'1'), ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'), ' -d ', parameters('snappydataDownloadURL'))]"
         }
       }
     },
@@ -970,7 +977,7 @@
           "fileUris":[
             "[variables('scriptUrlInit')]"
           ],
-          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -s ', concat(concat(variables('dnsNameForDataStorePublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'))]"
+          "commandToExecute":"[concat('sh init.sh', ' -t datastore', ' -s ', concat(concat(variables('dnsNameForDataStorePublicIP'),copyIndex()),'.',parameters('location'),'.cloudapp.azure.com'), ' -c ', parameters('dataStoreNodeCount'), ' -l ',concat(variables('locatorVmName'),'1'),  ' -u ', parameters('artifactsBaseUrl'), ' -a ', parameters('adminUsername'), ' -n ', parameters('locatorNodeCount'), ' -z ', parameters('launchZeppelin'), ' -f ', parameters('confForLocator'), ' -d ', parameters('snappydataDownloadURL'))]"
         }
       }
     }
