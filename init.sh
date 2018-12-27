@@ -178,8 +178,8 @@ export DIR=/opt/snappydata
 mkdir -p ${DIR}
 
 # TODO Get the latest snappydata distribution, if SNAPPYDATADOWNLOADURL is empty.
-SNAPPY_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
 
+SNAPPY_URL="https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz"
 if [[ ! -z ${SNAPPYDATADOWNLOADURL} ]]; then
   # Check if the URL provided is valid or not.
   if curl --output /dev/null --silent --head --fail "$SNAPPYDATADOWNLOADURL"; then
@@ -188,7 +188,17 @@ if [[ ! -z ${SNAPPYDATADOWNLOADURL} ]]; then
     log "Provided url for custom build of snappydata not accessible. Exiting."
     exit 10
   fi
+else 
+  wget -q https://github.com/SnappyDataInc/snappydata/releases/latest
+  URL_PART=`grep -o "/SnappyDataInc/snappydata/releases/download/[a-zA-Z0-9.\-]**/snappydata-[0-9.]**-bin.tar.gz" latest`
+  GREP_RESULT=`echo $?`
+  if [[ ${GREP_RESULT} != 0 ]]; then
+    echo "Did not find binaries for SNAPPYDATA_VERSION version. Using "`basename ${URL}`
+  else
+    SNAPPY_URL="https://github.com${URL_PART}"
+  fi
 fi
+
 
 SNAPPY_PACKAGE_NAME=`basename ${SNAPPY_URL}`
 

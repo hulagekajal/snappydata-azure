@@ -222,7 +222,7 @@
     },
     "snappydataDownloadURL":{
       "type":"string",
-      "defaultValue":"https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz",
+      "defaultValue":"",
       "metadata":{
         "description":"URL of Snappydata distribution to use."
       }
