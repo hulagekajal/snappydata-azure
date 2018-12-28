@@ -337,11 +337,12 @@
 
     "foption" :" ' -f ', ",
     "doption" :" ' -d ', ",
-    "confLead":"[if(equals(parameters('confForLead'), ''), json('null'), concat(variables('foption'),parameters('confForLead')))]",
-    "confLocator":"[if(equals(parameters('confForLocator'), ''), json('null'), concat(variables('foption'),parameters('confForLocator')))]",
-    "confDatastore":"[if(equals(parameters('confForDataStore'), ''), json('null'), concat(variables('foption'),parameters('confForDataStore')))]",
 
-    "customBuildURL":"[if(equals(parameters('snappydataDownloadURL'), ''), json('null'), concat(variables('doption'),parameters('snappydataDownloadURL')))]"
+    "confLead":"[if(equals(parameters('confForLead'), json('null')), json('null'), concat(variables('foption'),parameters('confForLead')))]",
+    "confLocator":"[if(equals(parameters('confForLocator'), json('null')), json('null'), concat(variables('foption'),parameters('confForLocator'))]",
+    "confDatastore":"[if(equals(parameters('confForDataStore'), json('null')), json('null'), concat(variables('foption'),parameters('confForDataStore')))]",
+
+    "customBuildURL":"[if(equals(parameters('snappydataDownloadURL'), json('null')), json('null'), concat(variables('doption'),parameters('snappydataDownloadURL')))]"
   },
   "resources":[
     {
