@@ -257,13 +257,13 @@ elif [ "$NODETYPE" == "lead" ]; then
     echo "show members;" > ${DIR}/showmembers.sql
     LEAD_RUNNING=1
     RETRIES=0
-    # Wait until lead1 becomes primary lead or 60 seconds elapse.
+    # Wait until lead1 becomes primary lead or 120 seconds elapse.
     log "Started the wait for lead1 to come up."
-    while $LEAD_RUNNING -ne 0 -a $RETRIES -lt 90; do
+    while [ ${LEAD_RUNNING} != 0 -a ${RETRIES} -lt 60 ]; do
       timeout 5s ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep "primary lead" | grep RUNNING
       # ${DIR}/bin/snappy run -file=${DIR}/showmembers.sql -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} | grep IMPLICIT_LEADER_SERVERGROUP | grep RUNNING  # applicable for 1.0.2
       LEAD_RUNNING=$?
-      let RETRIES=RETRIES+1
+      let RETRIES=${RETRIES}+1
       sleep 2
     done
     log "Found primary lead running: $LEAD_RUNNING"
