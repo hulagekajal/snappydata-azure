@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # init.sh -t NODETYPE -c DATASTORENODECOUNT -l LOCATORHOSTNAME -u BASEURL -a ADMINUSER -n LOCATORNODECOUNT -z LAUNCHZEPPELIN -f CONFPARAMETERS
-# sh init.sh -t locator -c 3 -l sd-locator1 -u https://raw.githubusercontent.com/hulagekajal/snappydata-azure/master -a azureuser -n 1 -z yes -f -heap-size=4g
+# sh init.sh -t locator -s snappydata-lead-kiuvz2l47tcpw0.eastasia.cloudapp.azure.com -c 3 -l sd-locator1 -u https://raw.githubusercontent.com/hulagekajal/snappydata-azure/master -a azureuser -n 1 -z yes -f -heap-size=4g -d https://github.com/SnappyDataInc/snappydata/releases/download/v1.0.2.1/snappydata-1.0.2.1-bin.tar.gz
 
 log()
 {
-    logger "[SNAPPYDATA] $1"
+  logger "[SNAPPYDATA] $1"
 }
 
 # Initialize local variables
@@ -14,153 +14,129 @@ NOW=$(date +"%Y%m%d")
 
 # Get command line parameters
 while getopts "t:s:c:l:u:a:n:z:f:d:" opt; do
-    log "Option $opt set with value (${OPTARG})"
-    case "$opt" in
-        t) NODETYPE=$OPTARG
-        ;;
-        s) PUBLICIP=$OPTARG
-        ;;
-        c) DATASTORENODECOUNT=$OPTARG
-        ;;
-        l) LOCATORHOSTNAME=$OPTARG
-        ;;
-        u) BASEURL=$OPTARG
-        ;;
-        a) ADMINUSER=$OPTARG
-        ;;
-        n) LOCATORNODECOUNT=$OPTARG
-        ;;
-        z) LAUNCHZEPPELIN=$OPTARG
-        ;;
-        f) CONFPARAMETERS=$OPTARG
-        ;;
-        d) SNAPPYDATADOWNLOADURL=$OPTARG
-        ;;
-    esac
-    done
+  log "Option $opt set with value (${OPTARG})"
+  case "$opt" in
+    t) NODETYPE=$OPTARG
+    ;;
+    s) PUBLICIP=$OPTARG
+    ;;
+    c) DATASTORENODECOUNT=$OPTARG
+    ;;
+    l) LOCATORHOSTNAME=$OPTARG
+    ;;
+    u) BASEURL=$OPTARG
+    ;;
+    a) ADMINUSER=$OPTARG
+    ;;
+    n) LOCATORNODECOUNT=$OPTARG
+    ;;
+    z) LAUNCHZEPPELIN=$OPTARG
+    ;;
+    f) CONFPARAMETERS=$OPTARG
+    ;;
+    d) SNAPPYDATADOWNLOADURL=$OPTARG
+    ;;
+  esac
+done
 
 fatal() {
-    msg=${1:-"Unknown Error"}
-    log "FATAL ERROR: $msg"
-    exit 1
-}
-
-# Retries a command on failure.
-# $1 - the max number of attempts
-# $2... - the command to run
-retry() {
-    local -r -i max_attempts="$1"; shift
-    local -r cmd="$@"
-    local -i attempt_num=1
- 
-    until $cmd
-    do
-        if (( attempt_num == max_attempts ))
-        then
-            log "Command $cmd attempt $attempt_num failed and there are no more attempts left!"
-        return 1
-        else
-            log "Command $cmd attempt $attempt_num failed. Trying again in 5 + $attempt_num seconds..."
-            sleep $(( 5 + attempt_num++ ))
-        fi
-    done
+  msg=${1:-"Unknown Error"}
+  log "FATAL ERROR: $msg"
+  exit 1
 }
 
 # You must be root to run this script
 if [ "${UID}" -ne 0 ]; then
-    fatal "You must be root to run this script."
+  fatal "You must be root to run this script."
 fi
 
 if [[ -z ${NODETYPE} ]]; then
-    fatal "No node type -t specified, can't proceed."
+  fatal "No node type -t specified, can't proceed."
 fi
 
 if [[ -z ${PUBLICIP} ]]; then
-    fatal "IP NOT GENERATED"
+  fatal "IP NOT GENERATED"
 fi
 
 if [[ -z ${DATASTORENODECOUNT} ]]; then
-    fatal "No datastore count -c specified, can't proceed."
+  fatal "No datastore count -c specified, can't proceed."
 fi
 
 if [[ -z ${LOCATORHOSTNAME} ]]; then
-    fatal "No locator hostname -l specified, can't proceed."
+  fatal "No locator hostname -l specified, can't proceed."
 fi
 
 if [[ -z ${BASEURL} ]]; then
-    fatal "No base URL -u specified, can't proceed."
+  fatal "No base URL -u specified, can't proceed."
 fi
 
 if [[ -z ${ADMINUSER} ]]; then
-    fatal "No admin username -a specified, can't proceed."
+  fatal "No admin username -a specified, can't proceed."
 fi
 
 if [[ -z ${LOCATORNODECOUNT} ]]; then
-    fatal "No locator count -n specified, can't proceed."
+  fatal "No locator count -n specified, can't proceed."
 fi
-
 
 log "init.sh NOW=$NOW NODETYPE=$NODETYPE DATASTORENODECOUNT=$DATASTORENODECOUNT BASEURL=$BASEURL LOCATORNODECOUNT=$LOCATORNODECOUNT"
 
 install_zeppelin()
 {
-    ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
-    ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
-    ZEP_NOTEBOOKS_DIR="notebook"
-    PUBLIC_HOSTNAME="${PUBLICIP}"
-    # Do not download and extract if /opt/zeppelin already exists.
-    export Z_DIR=/opt/zeppelin
-    if [[ ! -d ${Z_DIR} ]]; then
-      mkdir -p ${Z_DIR}
-      log "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
-      # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
-      wget -q "${ZEP_URL_MIRROR}"
-      tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
-    fi
-    chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
+  ZEP_URL_MIRROR="http://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-netinst.tgz"
+  ZEP_NOTEBOOKS_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/raw/notes/examples/notebook"
+  ZEP_NOTEBOOKS_DIR="notebook"
+  PUBLIC_HOSTNAME="${PUBLICIP}"
+  # Do not download and extract if /opt/zeppelin already exists.
+  export Z_DIR=/opt/zeppelin
+  if [[ ! -d ${Z_DIR} ]]; then
+    mkdir -p ${Z_DIR}
+    log "Downloading Zeppelin distribution from ${ZEP_URL_MIRROR} ..."
+    # download zeppelin 0.7.3 distribution, extract as /opt/zeppelin
+    wget -q "${ZEP_URL_MIRROR}"
+    tar -xf "zeppelin-0.7.3-bin-netinst.tgz" --directory ${Z_DIR} --strip 1
+  fi
+  chown -R ${ADMINUSER}:${ADMINUSER} /opt/zeppelin
 
-    # download pre-created sample notebooks for snappydata
-    log "Downloading Zeppelin notebooks from ${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz ..."
-    wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
-    tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
-    find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
+  # download pre-created sample notebooks for snappydata
+  log "Downloading Zeppelin notebooks from ${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz ..."
+  wget -q "${ZEP_NOTEBOOKS_URL}/${ZEP_NOTEBOOKS_DIR}.tar.gz"
+  tar -xzf "${ZEP_NOTEBOOKS_DIR}.tar.gz"
+  find ${ZEP_NOTEBOOKS_DIR} -type f -print0 | xargs -0 sed -i "s/localhost/${PUBLIC_HOSTNAME}/g"
 
-    log "Copying sample notebooks ..."
-    cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${Z_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+  log "Copying sample notebooks ..."
+  cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${Z_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+  # download zeppelin interpreter 0.7.3.4 for snappydata
+  ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
+  INTERPRETER_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/releases/download/v0.7.3.4/${ZEP_INTP_JAR}"
+  wget -q "${INTERPRETER_URL}"
+  mv "${ZEP_INTP_JAR}" "${DIR}/"
 
-    # download zeppelin interpreter 0.7.3.4 for snappydata
-    ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
-    INTERPRETER_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/releases/download/v0.7.3.4/${ZEP_INTP_JAR}"
-    wget -q "${INTERPRETER_URL}"
-    mv "${ZEP_INTP_JAR}" "${DIR}/"
+  ${Z_DIR}/bin/install-interpreter.sh --name snappydata --artifact io.snappydata:snappydata-zeppelin:0.7.3.4
+  # Modify conf/zeppelin-site.xml to include classnames of snappydata interpreters.
+  cp "${Z_DIR}/conf/zeppelin-site.xml.template" "${Z_DIR}/conf/zeppelin-site.xml"
+  SEARCH_STRING="<name>zeppelin.interpreters<\/name>"
+  INSERT_STRING="org.apache.zeppelin.interpreter.SnappyDataZeppelinInterpreter,org.apache.zeppelin.interpreter.SnappyDataSqlZeppelinInterpreter,"
+  sed -i "/${SEARCH_STRING}/{n;s/<value>/<value>${INSERT_STRING}/}" "${Z_DIR}/conf/zeppelin-site.xml"
 
-    ${Z_DIR}/bin/install-interpreter.sh --name snappydata --artifact io.snappydata:snappydata-zeppelin:0.7.3.4
+  # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
+  log "Configuring Snappydata Interpreter..."
+  ${Z_DIR}/bin/zeppelin-daemon.sh start
+  while ! test -f  "${Z_DIR}/conf/interpreter.json" ; do
+    sleep 3
+  done
+  sh "${Z_DIR}/bin/zeppelin-daemon.sh" stop
+  if [[ ! -e "${Z_DIR}/conf/interpreter.json" ]]; then
+    log "The file interpreter.json was not generated."
+  fi
 
-    # Modify conf/zeppelin-site.xml to include classnames of snappydata interpreters.
-    cp "${Z_DIR}/conf/zeppelin-site.xml.template" "${Z_DIR}/conf/zeppelin-site.xml"
-    SEARCH_STRING="<name>zeppelin.interpreters<\/name>"
-    INSERT_STRING="org.apache.zeppelin.interpreter.SnappyDataZeppelinInterpreter,org.apache.zeppelin.interpreter.SnappyDataSqlZeppelinInterpreter,"
-    sed -i "/${SEARCH_STRING}/{n;s/<value>/<value>${INSERT_STRING}/}" "${Z_DIR}/conf/zeppelin-site.xml"
-
-    # optional: generate interpreter.json by restarting the zeppelin server and point zeppelin to remote interpreter process at localhost:3768
-    log "Configuring Snappydata Interpreter..."
-    ${Z_DIR}/bin/zeppelin-daemon.sh start
-    while ! test -f  "${Z_DIR}/conf/interpreter.json" ; do
-      sleep 3
-    done
-    sh "${Z_DIR}/bin/zeppelin-daemon.sh" stop
-    if [[ ! -e "${Z_DIR}/conf/interpreter.json" ]]; then
-      log "The file interpreter.json was not generated."
-    fi
-
-    # Modify conf/interpreter.json to include lead host and port and set isExistingProcess to true.
-    if [[ -e "${Z_DIR}/conf/interpreter.json" ]]; then
-      LEAD_HOST="localhost"
-      LEAD_PORT="3768"
-      sed -i "/group\": \"snappydata\"/,/isExistingProcess\": false/{s/isExistingProcess\": false/isExistingProcess\": snappydatainc_marker/}" "${Z_DIR}/conf/interpreter.json"
-      sed -i "/snappydatainc_marker/a \"host\": \"${LEAD_HOST}\",\n \"port\": \"${LEAD_PORT}\"," "${Z_DIR}/conf/interpreter.json"
-      sed -i "s/snappydatainc_marker/true/" "${Z_DIR}/conf/interpreter.json"
-    fi
+  # Modify conf/interpreter.json to include lead host and port and set isExistingProcess to true.
+  if [[ -e "${Z_DIR}/conf/interpreter.json" ]]; then
+    LEAD_HOST="localhost"
+    LEAD_PORT="3768"
+    sed -i "/group\": \"snappydata\"/,/isExistingProcess\": false/{s/isExistingProcess\": false/isExistingProcess\": snappydatainc_marker/}" "${Z_DIR}/conf/interpreter.json"
+    sed -i "/snappydatainc_marker/a \"host\": \"${LEAD_HOST}\",\n \"port\": \"${LEAD_PORT}\"," "${Z_DIR}/conf/interpreter.json"
+    sed -i "s/snappydatainc_marker/true/" "${Z_DIR}/conf/interpreter.json"
+  fi
 }
 
 # ============================================================================================================
