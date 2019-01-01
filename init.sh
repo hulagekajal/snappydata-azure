@@ -105,6 +105,7 @@ install_zeppelin()
 
   log "Copying sample notebooks ..."
   cp -ar "${ZEP_NOTEBOOKS_DIR}/." "${Z_DIR}/${ZEP_NOTEBOOKS_DIR}/"
+
   # download zeppelin interpreter 0.7.3.4 for snappydata
   ZEP_INTP_JAR="snappydata-zeppelin_2.11-0.7.3.4.jar"
   INTERPRETER_URL="https://github.com/SnappyDataInc/zeppelin-interpreter/releases/download/v0.7.3.4/${ZEP_INTP_JAR}"
@@ -112,6 +113,7 @@ install_zeppelin()
   mv "${ZEP_INTP_JAR}" "${DIR}/"
 
   ${Z_DIR}/bin/install-interpreter.sh --name snappydata --artifact io.snappydata:snappydata-zeppelin:0.7.3.4
+
   # Modify conf/zeppelin-site.xml to include classnames of snappydata interpreters.
   cp "${Z_DIR}/conf/zeppelin-site.xml.template" "${Z_DIR}/conf/zeppelin-site.xml"
   SEARCH_STRING="<name>zeppelin.interpreters<\/name>"
@@ -168,7 +170,6 @@ else
     SNAPPY_URL="https://github.com${URL_PART}"
   fi
 fi
-
 
 SNAPPY_PACKAGE_NAME=`basename ${SNAPPY_URL}`
 
