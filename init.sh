@@ -215,8 +215,8 @@ if [ "$NODETYPE" == "locator" ]; then
   if [ ${OTHER_LOCATOR} != "" ]; then
     OTHER_LOCATOR="-locators=${OTHER_LOCATOR}:10334"
   fi
-  echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
-  ${DIR}/sbin/snappy-locators.sh start
+  su ${ADMINUSER} -c echo "${LOCAL_IP} -peer-discovery-address=${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/locator ${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/locators
+  su ${ADMINUSER} -c ${DIR}/sbin/snappy-locators.sh start
   log "Started locator process."
 fi
 
@@ -225,8 +225,8 @@ if [ ${OTHER_LOCATOR} != "" ]; then
 fi
 
 if [ "$NODETYPE" == "datastore" ]; then
-  echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
-  ${DIR}/sbin/snappy-servers.sh start
+  su ${ADMINUSER} -c echo "${LOCAL_IP} -hostname-for-clients=${PUBLICIP} -dir=/opt/snappydata/work/datastore -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/servers
+  su ${ADMINUSER} -c ${DIR}/sbin/snappy-servers.sh start
   log "Started server process."
 elif [ "$NODETYPE" == "lead" ]; then
   if [ ${HOST_NAME} == ${SECOND_LEAD} ];then
@@ -246,18 +246,18 @@ elif [ "$NODETYPE" == "lead" ]; then
   fi
 
   if [ "$LAUNCHZEPPELIN" == "yes" ]; then
-    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
+   su ${ADMINUSER} -c echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
     install_zeppelin
 
     if [ ${HOST_NAME} != ${SECOND_LEAD} ]; then
       # Start zeppelin server
-      ${Z_DIR}/bin/zeppelin-daemon.sh start
+      su ${ADMINUSER} -c ${Z_DIR}/bin/zeppelin-daemon.sh start
       log "Started Apache Zeppelin server."
     fi
   else
-    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    su ${ADMINUSER} -c echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   fi
-  ${DIR}/sbin/snappy-leads.sh start
+  su ${ADMINUSER} -c ${DIR}/sbin/snappy-leads.sh start
   log "Started lead process."
 fi
 
