@@ -247,18 +247,18 @@ elif [ "$NODETYPE" == "lead" ]; then
   fi
 
   if [ "$LAUNCHZEPPELIN" == "yes" ]; then
-   su ${ADMINUSER} -c echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} -zeppelin.interpreter.enable=true -classpath=${DIR}/snappydata-zeppelin_2.11-0.7.3.4.jar ${CONFPARAMETERS}" > ${DIR}/conf/leads
     install_zeppelin
 
     if [ ${HOST_NAME} != ${SECOND_LEAD} ]; then
       # Start zeppelin server
-      su ${ADMINUSER} -c ${Z_DIR}/bin/zeppelin-daemon.sh start
+      ${Z_DIR}/bin/zeppelin-daemon.sh start
       log "Started Apache Zeppelin server."
     fi
   else
-    su ${ADMINUSER} -c echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
+    echo "${LOCAL_IP} -dir=/opt/snappydata/work/lead -locators=${LOCATORHOSTNAME}:10334${OTHER_LOCATOR} ${CONFPARAMETERS}" > ${DIR}/conf/leads
   fi
-  su ${ADMINUSER} -c ${DIR}/sbin/snappy-leads.sh start
+  ${ADMINUSER} -c ${DIR}/sbin/snappy-leads.sh start
   log "Started lead process."
 fi
 
